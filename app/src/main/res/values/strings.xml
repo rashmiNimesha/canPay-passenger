@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Canpay</string>
+    <string name="welcome_text">Welcome, Let’s get you set up</string>
+    <string name="description_text">We’ll guide you through in seconds.</string>
+    <string name="continue_to_login">CONTINUE TO LOGIN</string>
+
+</resources>
