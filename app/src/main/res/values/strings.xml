@@ -3,5 +3,15 @@
     <string name="welcome_text">Welcome, Let’s get you set up</string>
     <string name="description_text">We’ll guide you through in seconds.</string>
     <string name="continue_to_login">CONTINUE TO LOGIN</string>
+    <string name="phone_title">What’s your phone number?</string>
+    <string name="phone_subtitle">We’ll send a 6-digit code to log in.</string>
+    <string name="phone_hint">Enter your phone number</string>
+    <string name="login">LOGIN</string>
+    <string name="terms">By continuing you\'re agreeing to our Terms &amp; Conditions</string>
+    <string name="otp_title">Check your text messages</string>
+    <string name="otp_subtitle">A code was sent to 07XXXXXXXX.</string>
+    <string name="next">NEXT</string>
+    <string name="resend_code">RESEND CODE</string>
+
 
 </resources>

@@ -14,6 +14,27 @@
         android:theme="@style/Theme.Canpay_passenger"
         tools:targetApi="31">
         <activity
+            android:name=".QrScanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EnterAmountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConfirmPincodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PincodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NameActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OtpActivity"
+            android:exported="false" />
+        <activity
             android:name=".PhoneNoActivity"
             android:exported="false" />
         <activity
