@@ -56,7 +56,7 @@ public class PhoneNoActivity extends AppCompatActivity {
             }
 
             String baseUrl = getBaseUrl();
-            String url = baseUrl + "/api/auth/send-otp";
+            String url = baseUrl + "/api/v1/auth/send-otp";
 
             Log.d(TAG, "Sending OTP request to: " + url);
             Log.d(TAG, "Email: " + email);

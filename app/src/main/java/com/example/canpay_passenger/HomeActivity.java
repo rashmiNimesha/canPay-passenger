@@ -2,8 +2,10 @@ package com.example.canpay_passenger;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +19,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final int CAMERA_PERMISSION_CODE = 101;
     private static final int QR_SCAN_REQUEST_CODE = 102;
+    TextView tv_greeting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +28,11 @@ public class HomeActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         FloatingActionButton fabQrScan = findViewById(R.id.fab_qr_scan);
+        tv_greeting = findViewById(R.id.tv_greeting);
+
+        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
+        String userName = prefs.getString("user_name", "User");
+        tv_greeting.setText("Hi, " + userName);
 
         // Default fragment
         if (savedInstanceState == null) {

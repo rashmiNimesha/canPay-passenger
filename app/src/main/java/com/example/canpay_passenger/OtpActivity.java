@@ -1,6 +1,7 @@
 package com.example.canpay_passenger;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -81,7 +82,7 @@ public class OtpActivity extends AppCompatActivity {
                 return;
             }
 
-            String url = "http://10.0.2.2:8081/api/auth/verify-otp";
+            String url = "http://10.0.2.2:8081/api/v1/auth/verify-otp";
 
             JSONObject jsonBody = new JSONObject();
             try {
@@ -99,13 +100,27 @@ public class OtpActivity extends AppCompatActivity {
                         if (isNewUser) {
                             Toast.makeText(this, "OTP verified. Please complete your profile.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(OtpActivity.this, NameActivity.class);
-                            intent.putExtra("email", email); // pass along if needed
+                            intent.putExtra("email", email);
                             startActivity(intent);
                             finish();
                         } else {
-                            Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                            // Handle existing user login
-                            // e.g., save token and navigate
+                            Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show();
+
+                            try {
+                                JSONObject profile = response.getJSONObject("profile");
+                                String name = profile.getString("name");
+
+                                SharedPreferences preferences = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putString("user_name", name);
+                                editor.apply();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            Intent intent = new Intent(OtpActivity.this, HomeActivity.class);
+                            startActivity(intent);
+                            finish();
                         }
                     },
                     error -> {
@@ -136,7 +151,7 @@ public class OtpActivity extends AppCompatActivity {
 
         tvResend.setOnClickListener(v -> {
             if (tvResend.isEnabled()) {
-                resendOtp(email); // 🔄 call resend logic
+                resendOtp(email); // call resend logic
                 startResendTimer();
             }
         });
@@ -161,7 +176,7 @@ public class OtpActivity extends AppCompatActivity {
             return;
         }
 
-        String url = "http://10.0.2.2:8081/api/auth/send-otp"; // or your real IP
+        String url = "http://10.0.2.2:8081/api/v1/auth/send-otp"; // or your real IP
 
         JSONObject jsonBody = new JSONObject();
         try {
