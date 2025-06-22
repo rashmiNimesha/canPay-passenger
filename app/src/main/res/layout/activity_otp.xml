@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/white"
+    android:background="@drawable/screen_bg"
     android:padding="24dp">
 
     <!-- Back Arrow Button -->
