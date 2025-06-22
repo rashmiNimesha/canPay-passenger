@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- Camera Preview with Scanner -->
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
+        android:id="@+id/barcode_scanner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:zxing_framing_rect_width="280dp"
+        app:zxing_framing_rect_height="280dp"
+        app:zxing_preview_scaling_strategy="fitCenter"
+        app:zxing_use_texture_view="true" />
+
+    <!-- Top Bar with Controls -->
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="36dp"
+            android:layout_height="48dp"
+            android:background="@drawable/circle_white_background"
+            android:contentDescription="@string/back_button"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back_arrow"
+            app:tint="@color/button_blue"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Flash Toggle Button -->
+        <ImageButton
+            android:id="@+id/btn_flash"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/circle_transparent_border"
+            android:src="@drawable/ic_flash_off"
+            android:contentDescription="@string/flash_toggle"
+            android:layout_marginEnd="12dp"
+            android:scaleType="centerInside" />
+
+        <!-- Gallery Button -->
+        <ImageButton
+            android:id="@+id/btn_gallery"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/circle_transparent_border"
+            android:src="@drawable/ic_cam_icon"
+            android:contentDescription="@string/open_gallery"
+            android:scaleType="centerInside" />
+
+    </LinearLayout>
+
+    <!-- Bottom Instructions Text -->
+    <TextView
+        android:id="@+id/tv_instruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
+        android:text="Align the camera to fill inside the frame"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:gravity="center" />
+
+</RelativeLayout>
