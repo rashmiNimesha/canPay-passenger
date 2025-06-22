@@ -66,7 +66,7 @@ public class ConfirmPincodeActivity extends AppCompatActivity {
                 pinBoxes[0].requestFocus();
                 return;
             }
-            startActivity(new Intent(this, HomeActivity.class));
+    //        startActivity(new Intent(this, HomeActivity.class));
             finish();
         });
 
