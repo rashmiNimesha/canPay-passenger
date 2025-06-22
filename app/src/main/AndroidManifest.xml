@@ -16,6 +16,15 @@
         android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
         <activity
+            android:name=".PaymentFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PaymentSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConfirmPaymentActivity"
+            android:exported="false" />
+        <activity
             android:name=".QrScanActivity"
             android:exported="false" />
         <activity
