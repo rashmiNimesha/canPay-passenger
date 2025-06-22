@@ -12,6 +12,14 @@
     <string name="otp_subtitle">A code was sent to 07XXXXXXXX.</string>
     <string name="next">NEXT</string>
     <string name="resend_code">RESEND CODE</string>
+    <string name="canpay_logo">CanPay logo</string>
+    <string name="no_transactions_found">No transactions found!</string>
+    <string name="no_transactions_subtitle">You haven\'t made any payments yet.</string>
+    <string name="flash_toggle">Toggle flash</string>
+    <string name="open_gallery">Open gallery</string>
+    <string name="back_button">Back</string>
+    <string name="close">Close</string>
+
 
 
 </resources>
