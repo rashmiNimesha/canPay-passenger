@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/screen_bg">
+
+    <!-- Back Button -->
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/circle_white_background"
+        android:src="@drawable/ic_back_arrow"
+        android:contentDescription="@string/back_button"
+        android:scaleType="centerInside"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        app:tint="@color/button_blue"/>
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How much do you want to pay?"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#23233C"
+        android:layout_below="@id/btn_back"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="24dp"/>
+
+    <!-- Payee Info -->
+    <TextView
+        android:id="@+id/tv_payee_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You're paying to: Gamage (ND-1234)"
+        android:textSize="16sp"
+        android:textColor="#888888"
+        android:layout_below="@id/tv_title"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="24dp"/>
+
+    <!-- Enter Amount Label -->
+    <TextView
+        android:id="@+id/tv_amount_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter amount"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:textColor="#23233C"
+        android:layout_below="@id/tv_payee_info"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="24dp"/>
+
+    <!-- Amount Input -->
+    <EditText
+        android:id="@+id/et_amount"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_below="@id/tv_amount_label"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/edittext_outline"
+        android:hint="0.00"
+        android:textSize="18sp"
+        android:inputType="numberDecimal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"/>
+
+    <!-- Next Button -->
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="NEXT"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_button"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="24dp"/>
+</RelativeLayout>
