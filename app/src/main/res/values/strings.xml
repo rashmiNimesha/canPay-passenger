@@ -19,6 +19,8 @@
     <string name="open_gallery">Open gallery</string>
     <string name="back_button">Back</string>
     <string name="close">Close</string>
+    <string name="notifications">Notifications</string>
+
 
 
 </resources>
