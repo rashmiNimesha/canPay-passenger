@@ -60,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:hint="Enter your phone number"
-        android:inputType="phone"
+        android:inputType="text"
         android:drawableEnd="@drawable/ic_phone"
         android:drawablePadding="5dp"
         android:background="@drawable/edittext_outline"

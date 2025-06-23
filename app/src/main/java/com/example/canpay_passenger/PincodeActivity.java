@@ -1,6 +1,7 @@
 package com.example.canpay_passenger;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +15,8 @@ public class PincodeActivity extends AppCompatActivity {
 
     private EditText[] pinBoxes = new EditText[4];
     private Button btnEnter;
+    private String originalPin;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,8 @@ public class PincodeActivity extends AppCompatActivity {
         pinBoxes[3] = findViewById(R.id.pin4);
         btnEnter = findViewById(R.id.btn_enter);
         ImageButton btnBack = findViewById(R.id.btn_back);
+
+        originalPin = getIntent().getStringExtra("pin_code");
 
         // Auto move focus
         for (int i = 0; i < pinBoxes.length; i++) {
@@ -46,7 +51,6 @@ public class PincodeActivity extends AppCompatActivity {
             });
         }
 
-        // Enter Button: Validate PIN and navigate to ConfirmPincodeActivity
         btnEnter.setOnClickListener(v -> {
             StringBuilder pin = new StringBuilder();
             for (EditText box : pinBoxes) {
@@ -58,19 +62,16 @@ public class PincodeActivity extends AppCompatActivity {
                 pin.append(digit);
             }
             String pinStr = pin.toString();
-            if (pinStr.matches("(\\d)\\1{3}")) {
-                Toast.makeText(this, "PIN cannot have all digits the same", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if ("1234".equals(pinStr) || "0000".equals(pinStr) || "4321".equals(pinStr)) {
+            if (pinStr.matches("(\\d)\\1{3}") || "1234".equals(pinStr) || "4321".equals(pinStr) || "0000".equals(pinStr)) {
                 Toast.makeText(this, "Choose a less obvious PIN", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             Intent intent = new Intent(PincodeActivity.this, ConfirmPincodeActivity.class);
             intent.putExtra("pin_code", pinStr);
             startActivity(intent);
-            finish();
         });
+
 
         // Back button: Navigate to NameActivity
         btnBack.setOnClickListener(v -> {

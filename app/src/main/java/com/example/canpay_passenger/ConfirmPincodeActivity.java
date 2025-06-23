@@ -1,6 +1,7 @@
 package com.example.canpay_passenger;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -59,6 +60,7 @@ public class ConfirmPincodeActivity extends AppCompatActivity {
                 }
                 pin.append(digit);
             }
+
             String confirmPin = pin.toString();
             if (!confirmPin.equals(originalPin)) {
                 Toast.makeText(this, "PINs do not match. Please try again.", Toast.LENGTH_SHORT).show();
@@ -66,6 +68,13 @@ public class ConfirmPincodeActivity extends AppCompatActivity {
                 pinBoxes[0].requestFocus();
                 return;
             }
+
+            // ✅ Save the matched PIN locally
+            SharedPreferences preferences = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
+            preferences.edit().putString("user_pin", confirmPin).apply();
+
+            Toast.makeText(this, "PIN saved locally", Toast.LENGTH_SHORT).show();
+
             startActivity(new Intent(this, HomeActivity.class));
             finish();
         });
