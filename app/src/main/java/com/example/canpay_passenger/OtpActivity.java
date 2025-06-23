@@ -88,6 +88,7 @@ public class OtpActivity extends AppCompatActivity {
             try {
                 jsonBody.put("email", email);
                 jsonBody.put("otp", otp.toString());
+                jsonBody.put("role", "PASSENGER");
             } catch (JSONException e) {
                 e.printStackTrace();
                 return;
