@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/screen_bg">
+
+    <!-- Back Button -->
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/circle_white_background"
+        android:src="@drawable/ic_back_arrow"
+        android:contentDescription="@string/back_button"
+        android:scaleType="centerInside"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"/>
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tv_confirm_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pay 970.00 LKR to Gamage?"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#23233C"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:layout_below="@id/btn_back"/>
+
+    <!-- Profile Image -->
+    <ImageView
+        android:id="@+id/iv_profile"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tv_confirm_title"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_propic" />
+
+    <!-- Bus Number -->
+    <TextView
+        android:id="@+id/tv_bus_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ND - 1234"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_gray_bg"
+        android:padding="12dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/iv_profile"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Bus Route -->
+    <TextView
+        android:id="@+id/tv_bus_route"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Matara - Makumbura"
+        android:textSize="16sp"
+        android:textColor="#888888"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tv_bus_number"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Instruction -->
+    <TextView
+        android:id="@+id/tv_instruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please move the slider from left to right to confirm the payment."
+        android:textSize="14sp"
+        android:textColor="#888888"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tv_bus_route"
+        android:layout_marginTop="28dp"/>
+
+    <!-- Swipe to Pay Button (use a custom view or a library for swipe) -->
+    <Button
+        android:id="@+id/btn_swipe_to_pay"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="SWIPE TO PAY"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_button"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="24dp"/>
+</RelativeLayout>

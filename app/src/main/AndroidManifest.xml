@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.canpay_passenger">
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -12,7 +13,44 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Canpay_passenger"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
+        <activity
+            android:name=".AddBankAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NICEntryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PaymentFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PaymentSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConfirmPaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".QrScanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EnterAmountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConfirmPincodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PincodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NameActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OtpActivity"
+            android:exported="false" />
         <activity
             android:name=".PhoneNoActivity"
             android:exported="false" />
