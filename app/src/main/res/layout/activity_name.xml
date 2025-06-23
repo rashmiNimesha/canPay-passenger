@@ -17,7 +17,8 @@
         android:contentDescription="Back"
         android:layout_gravity="start"
         android:scaleType="center"
-        app:tint="@color/button_blue"/>
+        app:tint="@color/button_blue"
+        android:layout_marginBottom="16dp"/>
 
     <!-- Progress Bar (Steps) -->
     <LinearLayout
@@ -64,7 +65,7 @@
         android:textColor="@color/text_primary"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginTop="32dp"/>
+        android:layout_marginTop="30dp"/>
 
     <!-- Subtitle -->
     <TextView
