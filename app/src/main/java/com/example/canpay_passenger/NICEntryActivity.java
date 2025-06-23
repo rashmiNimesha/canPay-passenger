@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class NICEntryActivity extends AppCompatActivity {
@@ -20,6 +19,8 @@ public class NICEntryActivity extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.btn_back);
 
         btnBack.setOnClickListener(v -> finish());
+        String name = getIntent().getStringExtra("name");
+        String email = getIntent().getStringExtra("email");
 
         btnNext.setOnClickListener(v -> {
             String nic = etNic.getText().toString().trim();
@@ -28,9 +29,11 @@ public class NICEntryActivity extends AppCompatActivity {
                 etNic.requestFocus();
                 return;
             }
-            // No validation, just go to next activity
+
             Intent intent = new Intent(NICEntryActivity.this, AddBankAccountActivity.class);
-            intent.putExtra("NIC", nic); // Optional: pass NIC if needed
+            intent.putExtra("name", name);
+            intent.putExtra("email", email);
+            intent.putExtra("nic", nic);
             startActivity(intent);
             finish();
         });
