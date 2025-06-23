@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -29,6 +30,13 @@ public class HomeActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         FloatingActionButton fabQrScan = findViewById(R.id.fab_qr_scan);
         tv_greeting = findViewById(R.id.tv_greeting);
+
+        // Notifications icon click listener
+        ImageView ivNotifications = findViewById(R.id.iv_notifications);
+        ivNotifications.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, NotificationsActivity.class);
+            startActivity(intent);
+        });
 
         SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
         String userName = prefs.getString("user_name", "User");
@@ -70,6 +78,12 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    // Method to start recharge activity (call this from HomeFragment)
+    public void startRechargeActivity() {
+        Intent intent = new Intent(this, RechargeAmountActivity.class);
+        startActivity(intent);
+    }
+
     private void startQrScanner() {
         Intent intent = new Intent(this, QrScanActivity.class);
         startActivityForResult(intent, QR_SCAN_REQUEST_CODE);
@@ -93,7 +107,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == QR_SCAN_REQUEST_CODE && resultCode == RESULT_OK) {
             String qrResult = data.getStringExtra("QR_RESULT");
-            // Pass QR result to EnterAmountActivity
             Intent intent = new Intent(this, EnterAmountActivity.class);
             intent.putExtra("qr_code", qrResult);
             startActivity(intent);
