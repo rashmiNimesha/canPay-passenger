@@ -2,7 +2,6 @@ package com.example.canpay_passenger;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.SurfaceControl;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -16,7 +15,7 @@ public class HistoryFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private LinearLayout emptyStateView;
-    private List<Transaction> transactionList; // Replace with your actual model
+    private List<Transaction> transactionList; // Use your actual model
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,12 +43,12 @@ public class HistoryFragment extends Fragment {
 
     // TODO: Replace this with your actual transaction loading logic
     private List<Transaction> loadTransactions() {
-        List<SurfaceControl.Transaction> list = new ArrayList<>();
+        List<Transaction> list = new ArrayList<>();
         // For demo, return empty for empty state, or add sample data for history
         // Uncomment to test with data:
         /*
-        list.add(new Transaction("Merchant name", "-2,050.00", "Nov 18, 2024"));
-        list.add(new Transaction("Wallet recharge", "+10,000.00", "Nov 18, 2024"));
+        list.add(new Transaction("Merchant name", "-2,050.00", "Nov 18, 2024", R.drawable.ic_arrow_red));
+        list.add(new Transaction("Wallet recharge", "+10,000.00", "Nov 18, 2024", R.drawable.ic_arrow_blue));
         // ... add more as needed
         */
         return list;
