@@ -1,11 +1,23 @@
 package com.example.canpay_passenger;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RechargeConfirmationActivity extends AppCompatActivity {
 
@@ -17,51 +29,69 @@ public class RechargeConfirmationActivity extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.btn_back);
         btnBack.setOnClickListener(v -> finish());
 
-        // Get intent extras (replace with real data as needed)
         String amount = getIntent().getStringExtra("AMOUNT");
         String bankAccount = getIntent().getStringExtra("BANK_ACCOUNT");
         String dateTime = getIntent().getStringExtra("DATE_TIME");
-        if (amount == null) amount = "970.00";
-        if (bankAccount == null) bankAccount = "123456890 - Bank of Ceylon";
-        if (dateTime == null) dateTime = "02 June 2025 - 10.30 AM";
 
-        // Set dynamic UI values
         TextView tvTitle = findViewById(R.id.tv_recharge_title);
         tvTitle.setText("Add " + amount + " LKR to your wallet?");
         ((TextView)findViewById(R.id.tv_from)).setText(bankAccount);
         ((TextView)findViewById(R.id.tv_to)).setText("My CanPay Wallet");
         ((TextView)findViewById(R.id.tv_date_time)).setText(dateTime);
 
-        // Make final copies for use inside lambda
         final String amountFinal = amount;
         final String bankAccountFinal = bankAccount;
         final String dateTimeFinal = dateTime;
 
         Button btnRecharge = findViewById(R.id.btn_recharge);
+
         btnRecharge.setOnClickListener(v -> {
-            // Simulate recharge logic
-            boolean isSuccess = simulateRecharge(amountFinal, bankAccountFinal);
+            SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
+            String email = prefs.getString("email", null);
+            String token = prefs.getString("token", null); // 🔐 get token
 
-            Intent intent;
-            if (isSuccess) {
-                intent = new Intent(RechargeConfirmationActivity.this, RechargeSuccessActivity.class);
-                intent.putExtra("AMOUNT", amountFinal);
-                intent.putExtra("DATE_TIME", dateTimeFinal);
-            } else {
-                intent = new Intent(RechargeConfirmationActivity.this, RechargeFailedActivity.class);
+            if (email == null || amountFinal == null || token == null) {
+                Toast.makeText(this, "Missing required info", Toast.LENGTH_SHORT).show();
+                return;
             }
-            startActivity(intent);
-            finish();
-        });
-    }
 
-    // Simulate recharge logic (replace with real API/validation)
-    private boolean simulateRecharge(String amount, String bankAccount) {
-        try {
-            double amt = Double.parseDouble(amount);
-            return amt > 0 && amt < 5000;
-        } catch (Exception e) {
-            return false;
-        }
+            String url = "http://10.0.2.2:8081/api/v1/wallet/recharge";
+
+            JSONObject body = new JSONObject();
+            try {
+                body.put("email", email);
+                body.put("amount", amountFinal);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            JsonObjectRequest request = new JsonObjectRequest(
+                    Request.Method.POST, url, body,
+                    response -> {
+                        Intent intent = new Intent(RechargeConfirmationActivity.this, RechargeSuccessActivity.class);
+                        intent.putExtra("AMOUNT", amountFinal);
+                        intent.putExtra("BANK_ACCOUNT", bankAccountFinal);
+                        intent.putExtra("DATE_TIME", dateTimeFinal);
+                        startActivity(intent);
+                        finish();
+                    },
+                    error -> {
+                        Intent intent = new Intent(RechargeConfirmationActivity.this, RechargeFailedActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Bearer " + token);
+                    headers.put("Content-Type", "application/json");
+                    return headers;
+                }
+            };
+
+            Volley.newRequestQueue(this).add(request);
+        });
     }
 }

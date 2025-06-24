@@ -80,8 +80,16 @@ public class HomeActivity extends AppCompatActivity {
 
     // Method to start recharge activity (call this from HomeFragment)
     public void startRechargeActivity() {
-        Intent intent = new Intent(this, RechargeAmountActivity.class);
-        startActivity(intent);
+        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
+        String email = prefs.getString("email", null);
+        if (email != null) {
+            Intent intent = new Intent(this, RechargeAmountActivity.class);
+            intent.putExtra("email", email);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Email not found", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void startQrScanner() {

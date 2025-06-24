@@ -18,6 +18,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.canpay_passenger.utils.JwtUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -105,23 +106,30 @@ public class OtpActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         } else {
-                            Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show();
-
                             try {
-                                JSONObject profile = response.getJSONObject("profile");
-                                String name = profile.getString("name");
+                                String token = response.getString("token");
+                                // Decode using JwtUtils
+                                String role = JwtUtils.getRoleFromToken(token);
+                                String userEmail = JwtUtils.getEmailFromToken(token);
+                                String userName = JwtUtils.getNameFromToken(token);
+                                int userId = JwtUtils.getUserIdFromToken(token);
 
                                 SharedPreferences preferences = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
                                 SharedPreferences.Editor editor = preferences.edit();
-                                editor.putString("user_name", name);
+                                editor.putString("role", role);
+                                editor.putString("email", userEmail);
+                                editor.putString("user_name", userName);
+                                editor.putInt("user_id", userId);
                                 editor.apply();
+                                Log.d("TOKEN_DECODE", "Saved role: " + role + ", id: " + userId);
+
+                                Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(OtpActivity.this, HomeActivity.class));
+                                finish();
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                Toast.makeText(this, "Failed to parse profile", Toast.LENGTH_SHORT).show();
                             }
-
-                            Intent intent = new Intent(OtpActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                            finish();
                         }
                     },
                     error -> {

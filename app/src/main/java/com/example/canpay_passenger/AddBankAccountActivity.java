@@ -18,6 +18,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.canpay_passenger.utils.JwtUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -110,23 +111,37 @@ public class AddBankAccountActivity extends AppCompatActivity {
                     response -> {
                         try {
                             JSONObject profile = response.getJSONObject("profile");
-                            String nameFromResponse = profile.getString("name");
+                            String emailFromResponse = profile.getString("email");
+                            String token = response.getString("token");
+
+                            // Decode using JwtUtils
+                            String role = JwtUtils.getRoleFromToken(token);
+                            String userEmail = JwtUtils.getEmailFromToken(token);
+                            String userName = JwtUtils.getNameFromToken(token);
+                            int userId = JwtUtils.getUserIdFromToken(token);
+
                             SharedPreferences preferences = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
                             SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("user_name", nameFromResponse);
+                            editor.putString("token", token);
+                            editor.putString("role", role);
+                            editor.putString("email", userEmail);
+                            editor.putString("user_name", userName);
+                            editor.putInt("user_id", userId);
                             editor.apply();
 
+                            Log.d("TOKEN_DECODE", "Saved role: " + role + ", id: " + userId);
+                            Toast.makeText(this, "Profile created successfully", Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(AddBankAccountActivity.this, PincodeActivity.class);
+                            intent.putExtra("email", emailFromResponse);
+                            startActivity(intent);
+                            finish();
+
                         } catch (JSONException e) {
-                            throw new RuntimeException(e);
+                            Log.e("PARSE_ERROR", "Failed to parse response: " + e.getMessage());
+                            Toast.makeText(this, "Parsing error", Toast.LENGTH_SHORT).show();
+                            btnNext.setEnabled(true);
                         }
-
-                        Toast.makeText(this, "Profile created successfully", Toast.LENGTH_SHORT).show();
-
-                        Intent intent = new Intent(AddBankAccountActivity.this, PincodeActivity.class);
-                        intent.putExtra("email", email);
-                        startActivity(intent);
-                        finish();
-
                     },
                     error -> {
                         Toast.makeText(this, "Failed to create profile", Toast.LENGTH_SHORT).show();

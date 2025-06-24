@@ -1,8 +1,10 @@
 package com.example.canpay_passenger;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,8 +12,18 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RechargeAmountActivity extends AppCompatActivity {
 
@@ -26,7 +38,15 @@ public class RechargeAmountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recharge_amount);
 
         initViews();
-        setupBankAccounts();
+
+        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
+        String email = prefs.getString("email", null);
+
+        if (email != null) {
+            loadBankAccountsFromBackend(email);
+        } else {
+            Toast.makeText(this, "Email not found", Toast.LENGTH_SHORT).show();
+        }
         setupClickListeners();
     }
 
@@ -37,46 +57,61 @@ public class RechargeAmountActivity extends AppCompatActivity {
         btnNext = findViewById(R.id.btn_next);
     }
 
-    private void setupBankAccounts() {
-        // For now, using sample data. Replace with backend API call
-        List<String> bankAccounts = getSampleBankAccounts();
+    private void loadBankAccountsFromBackend(String email) {
+        String url = "http://10.0.2.2:8081/api/v1/bank-account/by-email?email=" + email;
+        Log.d("RECHARGE", "Requesting bank accounts from: " + url);
 
-        // TODO: Replace with actual backend call
-        // loadBankAccountsFromBackend();
+        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
+        String token = prefs.getString("token", null);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_dropdown_item, bankAccounts);
-        spinnerBankAccount.setAdapter(adapter);
+        if (token == null) {
+            Toast.makeText(this, "Missing token", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JsonArrayRequest request = new JsonArrayRequest(
+                Request.Method.GET, url, null,
+                response -> {
+                    List<String> accounts = new ArrayList<>();
+                    accounts.add("Select bank account");
+
+                    for (int i = 0; i < response.length(); i++) {
+                        try {
+                            JSONObject obj = response.getJSONObject(i);
+                            String bank = obj.getString("bank");
+                            String acc = obj.getString("accountNumber");
+                            String masked = "****" + acc.substring(Math.max(0, acc.length() - 4));
+                            accounts.add(bank + " - " + masked);
+                        } catch (JSONException e) {
+                            Log.e("RECHARGE", "JSON parse error: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+
+                    runOnUiThread(() -> {
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                                RechargeAmountActivity.this,
+                                android.R.layout.simple_spinner_dropdown_item,
+                                accounts
+                        );
+                        spinnerBankAccount.setAdapter(adapter);
+                    });
+                },
+                error -> {
+                    Log.e("RECHARGE", "Failed to fetch bank accounts: " + error.toString());
+                    Toast.makeText(this, "Failed to load bank accounts", Toast.LENGTH_SHORT).show();
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + token);
+                return headers;
+            }
+        };
+
+        Volley.newRequestQueue(this).add(request);
     }
-
-    // Sample bank accounts - replace with backend data
-    private List<String> getSampleBankAccounts() {
-        List<String> accounts = new ArrayList<>();
-        accounts.add("Select bank account");
-        accounts.add("Bank of Ceylon - ****2174");
-        accounts.add("Commercial Bank - ****5689");
-        accounts.add("People's Bank - ****1234");
-        return accounts;
-    }
-
-    // TODO: Implement this method to load from your backend
-    /*
-    private void loadBankAccountsFromBackend() {
-        // Call your partner's backend API here
-        // Example:
-        // ApiService.getBankAccounts(userId, new Callback<List<BankAccount>>() {
-        //     @Override
-        //     public void onSuccess(List<BankAccount> accounts) {
-        //         updateSpinner(accounts);
-        //     }
-        //     
-        //     @Override
-        //     public void onError(String error) {
-        //         // Handle error
-        //     }
-        // });
-    }
-    */
 
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
