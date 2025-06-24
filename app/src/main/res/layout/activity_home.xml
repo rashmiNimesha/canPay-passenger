@@ -25,11 +25,14 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/iv_notification"
+            android:id="@+id/iv_notifications"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@drawable/ic_notification"
-            android:layout_marginEnd="16dp" />
+            android:contentDescription="@string/notifications"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"/>
 
         <ImageView
             android:id="@+id/iv_profile"

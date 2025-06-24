@@ -18,10 +18,49 @@
         android:textStyle="bold"
         android:layout_marginBottom="12dp"/>
 
-    <!-- History Transactions List -->
+    <!-- RecyclerView for Transactions -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false"/>
+        android:nestedScrollingEnabled="false"
+        android:visibility="visible"/>
+
+    <!-- Empty State View (hidden by default) -->
+    <LinearLayout
+        android:id="@+id/history_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        android:paddingTop="48dp">
+
+        <ImageView
+            android:id="@+id/iv_empty_state"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_no_transactions"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/tv_no_transactions_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No transactions found!"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="24dp"/>
+
+        <TextView
+            android:id="@+id/tv_no_transactions_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You haven't made any payments yet."
+            android:textSize="15sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
 </LinearLayout>

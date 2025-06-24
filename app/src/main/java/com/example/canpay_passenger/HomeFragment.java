@@ -1,9 +1,11 @@
 package com.example.canpay_passenger;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
@@ -22,6 +24,13 @@ public class HomeFragment extends Fragment {
         // Initialize views
         recyclerView = view.findViewById(R.id.rv_recent_transactions);
         emptyStateContainer = view.findViewById(R.id.empty_state_container);
+
+        // --- Recharge Wallet Button Listener ---
+        Button btnRecharge = view.findViewById(R.id.btn_recharge);
+        btnRecharge.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), RechargeAmountActivity.class);
+            startActivity(intent);
+        });
 
         // Initialize your transaction data (this is where you'd load real data)
         transactionsList = new ArrayList<>();
