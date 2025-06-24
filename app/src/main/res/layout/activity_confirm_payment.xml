@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/screen_bg">
@@ -11,7 +12,7 @@
         android:layout_height="40dp"
         android:layout_marginTop="24dp"
         android:layout_marginStart="16dp"
-        android:background="@drawable/circle_white_background"
+        android:background="@drawable/ic_back_circle_bg"
         android:src="@drawable/ic_back_arrow"
         android:contentDescription="@string/back_button"
         android:scaleType="centerInside"
