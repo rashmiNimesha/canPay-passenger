@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/screen_bg">
+
+    <!-- Header -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:background="@android:color/transparent">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            app:tint="@color/button_blue"
+            android:background="@drawable/ic_back_circle_bg"
+            android:src="@drawable/ic_back_arrow"
+            android:contentDescription="@string/back_button" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bank Accounts"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#23233C"
+            android:layout_centerInParent="true" />
+
+        <ImageView
+            android:id="@+id/btn_add"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_add_ac"
+            android:contentDescription="@string/add_bank_account" />
+    </RelativeLayout>
+
+    <!-- Bank Accounts List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_bank_accounts"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"/>
+</LinearLayout>
