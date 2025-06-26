@@ -1,0 +1,42 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:orientation="horizontal"
+    android:background="@drawable/rounded_white_bg"
+    android:padding="12dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="0dp"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_bank"
+        android:contentDescription="@null"
+        android:layout_marginEnd="12dp"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bank Accounts"
+            android:textSize="13sp"
+            android:textColor="#888888"/>
+
+        <TextView
+            android:id="@+id/tv_bank_account_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bank of Ceylon - Sehan Weerasekara"
+            android:textSize="15sp"
+            android:textColor="#23233C"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+</LinearLayout>

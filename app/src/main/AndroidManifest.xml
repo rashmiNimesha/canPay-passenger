@@ -17,6 +17,66 @@
         android:theme="@style/Theme.Canpay_passenger"
         tools:targetApi="31">
         <activity
+            android:name=".PinUpdateFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PinUpdateSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConfirmNewPinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CreateNewPinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CurrentPinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PhoneUpdateFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PhoneUpdateSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditOtpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditPhoneActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NameUpdateFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NameUpdateSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditNameActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BankAddFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BankAddSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddNewBankAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BankUpdateFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BankUpdateSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditBankAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BankAccountListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".NotificationsActivity"
             android:exported="false" />
         <activity

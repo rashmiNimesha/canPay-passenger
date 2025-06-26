@@ -38,6 +38,13 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Profile icon click listener
+        ImageView ivProfile = findViewById(R.id.iv_profile);
+        ivProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
+
         SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
         String userName = prefs.getString("user_name", "User");
         tv_greeting.setText("Hi, " + userName);

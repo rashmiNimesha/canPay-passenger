@@ -20,7 +20,9 @@
     <string name="back_button">Back</string>
     <string name="close">Close</string>
     <string name="notifications">Notifications</string>
-
+    <string name="profile_image">Profile image</string>
+    <string name="camera">Camera</string>
+    <string name="add_bank_account">Add Bank Account</string>
 
 
 </resources>
