@@ -35,7 +35,9 @@ public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         BankAccount account = accounts.get(position);
 
-       holder.tvName.setText(account.getBank());
+        holder.tvBankName.setText(account.getBank());
+        holder.tvAccountHolder.setText(account.getAccountName());
+
         holder.itemView.setOnClickListener(v -> listener.onBankAccountClick(account));
     }
 
@@ -45,10 +47,15 @@ public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName;
+        TextView tvBankName;
+        TextView tvAccountHolder;
+        ImageView ivBankIcon; // If you want to use the bank icon
+
         ViewHolder(View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.tv_bank_account_name);
+            tvBankName = itemView.findViewById(R.id.tv_bank_name);
+            tvAccountHolder = itemView.findViewById(R.id.tv_account_holder);
+            ivBankIcon = itemView.findViewById(R.id.iv_bank_icon); // Optional, if you want to use the icon
         }
     }
 }
