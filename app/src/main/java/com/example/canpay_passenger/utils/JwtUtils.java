@@ -41,4 +41,8 @@ public class JwtUtils {
         JSONObject payload = decodeJwtPayload(token);
         return payload != null ? payload.optString("name", "") : "";
     }
+    public static String getNicFromToken(String token) {
+        JSONObject payload = decodeJwtPayload(token);
+        return payload != null ? payload.optString("nic", "") : "";
+    }
 }

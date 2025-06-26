@@ -120,6 +120,7 @@ public class AddBankAccountActivity extends AppCompatActivity {
                             String userEmail = JwtUtils.getEmailFromToken(token);
                             String userName = JwtUtils.getNameFromToken(token);
                             int userId = JwtUtils.getUserIdFromToken(token);
+                            String nicToken = JwtUtils.getNicFromToken(token);
 
                             SharedPreferences preferences = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
                             SharedPreferences.Editor editor = preferences.edit();
@@ -128,6 +129,7 @@ public class AddBankAccountActivity extends AppCompatActivity {
                             editor.putString("email", userEmail);
                             editor.putString("user_name", userName);
                             editor.putInt("user_id", userId);
+                            editor.putString("nic", nicToken);
                             editor.apply();
 
                             Log.d("TOKEN_DECODE", "Saved role: " + role + ", id: " + userId);

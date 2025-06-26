@@ -174,7 +174,7 @@
                     android:id="@+id/tv_user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sehan Weerasekara"
+                    android:text=""
                     android:textSize="15sp"
                     android:textColor="#23233C"
                     android:layout_marginTop="2dp"/>

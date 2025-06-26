@@ -34,7 +34,8 @@ public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         BankAccount account = accounts.get(position);
-        holder.tvName.setText(account.getName());
+
+       holder.tvName.setText(account.getBank());
         holder.itemView.setOnClickListener(v -> listener.onBankAccountClick(account));
     }
 

@@ -64,9 +64,9 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void loadUserData() {
         SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-        String userName = prefs.getString("user_name", "Sehan Weerasekara");
-        String userPhone = prefs.getString("user_phone", "+94 71 12 12 123");
-        String userNic = prefs.getString("user_nic", "2000XXXXXXXX");
+        String userName = prefs.getString("user_name", "");
+        String userPhone = prefs.getString("email", "");
+        String userNic = prefs.getString("nic", "");
 
         tvUserName.setText(userName);
         tvUserPhone.setText(userPhone);

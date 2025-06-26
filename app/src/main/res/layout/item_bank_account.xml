@@ -32,7 +32,7 @@
             android:id="@+id/tv_bank_account_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bank of Ceylon - Sehan Weerasekara"
+            android:text=""
             android:textSize="15sp"
             android:textColor="#23233C"
             android:maxLines="1"
