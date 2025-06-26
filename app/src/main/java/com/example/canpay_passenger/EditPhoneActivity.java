@@ -1,6 +1,5 @@
 package com.example.canpay_passenger;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,31 +8,36 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-
 public class EditPhoneActivity extends AppCompatActivity {
 
-    private TextInputEditText etPhone;
-    private TextInputLayout tilPhone;
+    private EditText etPhone;
     private TextView tvError;
     private Button btnUpdatePhone;
-    private ImageView ivBack;
+    private ImageButton ivBack;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_phone);
 
-        EditText etPhone = findViewById(R.id.et_phone);
-        Button btnUpdatePhone = findViewById(R.id.btn_login);
-        ImageButton ivBack = findViewById(R.id.btn_back);
+        etPhone = findViewById(R.id.et_phone);
+        btnUpdatePhone = findViewById(R.id.btn_login);
+        ivBack = findViewById(R.id.btn_back);
+
+        // Dynamically add the error TextView if not in XML
+        tvError = findViewById(R.id.tvError);
+        if (tvError == null) {
+            tvError = new TextView(this);
+            tvError.setId(View.generateViewId());
+            tvError.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            tvError.setTextSize(14);
+            tvError.setVisibility(View.GONE);
+            ((android.widget.LinearLayout) findViewById(android.R.id.content).getRootView().findViewById(android.R.id.content)).addView(tvError, 7); // Add after phone EditText
+        }
 
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,11 +77,9 @@ public class EditPhoneActivity extends AppCompatActivity {
     private void showError(String message) {
         if (message == null) {
             tvError.setVisibility(View.GONE);
-            tilPhone.setError(null);
         } else {
             tvError.setText(message);
             tvError.setVisibility(View.VISIBLE);
-            tilPhone.setError(" ");
         }
     }
 

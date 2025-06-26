@@ -31,7 +31,6 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-
     <!-- Title -->
     <TextView
         android:id="@+id/tv_title"
@@ -65,7 +64,6 @@
         android:layout_marginTop="24dp"
         android:layout_marginBottom="8dp"/>
 
-
     <!-- Enter Phone Number -->
     <EditText
         android:id="@+id/et_phone"
@@ -81,6 +79,16 @@
         android:textSize="16sp"
         android:layout_marginTop="3dp"/>
 
+    <!-- Error Message -->
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#D32F2F"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"/>
 
     <!-- Login Button -->
     <Button

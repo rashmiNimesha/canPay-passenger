@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,8 +18,6 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +28,7 @@ import java.util.Map;
 public class EditNameActivity extends AppCompatActivity {
 
     private EditText etName;
-    private TextInputLayout tilName;
+    private TextView tvError;
     private Button btnUpdateName;
     private ImageButton btnBack;
 
@@ -39,16 +38,13 @@ public class EditNameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_name);
 
         etName = findViewById(R.id.etName);
+        tvError = findViewById(R.id.tvError);
         btnUpdateName = findViewById(R.id.btnUpdateName);
         btnBack = findViewById(R.id.btn_back);
-
-        // Optionally set current name if available
-        // etName.setText(getIntent().getStringExtra("current_name"));
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Go back to ProfileActivity
                 Intent intent = new Intent(EditNameActivity.this, ProfileActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
@@ -66,38 +62,27 @@ public class EditNameActivity extends AppCompatActivity {
 
     private void validateAndSubmit() {
         String name = etName.getText() != null ? etName.getText().toString().trim() : "";
+        tvError.setVisibility(View.GONE); // Hide error by default
 
-        // Validation: not empty, min 2 chars, only letters and spaces
         if (TextUtils.isEmpty(name)) {
-            tilName.setError("Name cannot be empty");
+            showError("Name cannot be empty");
             return;
         }
         if (name.length() < 2) {
-            tilName.setError("Name must be at least 2 characters");
+            showError("Name must be at least 2 characters");
             return;
         }
         if (!name.matches("^[a-zA-Z .'-]+$")) {
-            tilName.setError("Name contains invalid characters");
+            showError("Name contains invalid characters");
             return;
         }
 
-        tilName.setError(null);
         updateNameOnBackend(name);
+    }
 
-//        // Simulate backend call (replace with your real API logic)
-//        boolean isSuccess = Math.random() > 0.2; // 80% chance success for demo
-//
-//        if (isSuccess) {
-//            Intent intent = new Intent(EditNameActivity.this, NameUpdateSuccessActivity.class);
-//            startActivity(intent);
-//            finish();
-//        } else {
-//            Intent intent = new Intent(EditNameActivity.this, NameUpdateFailedActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
-
-
+    private void showError(String message) {
+        tvError.setText(message);
+        tvError.setVisibility(View.VISIBLE);
     }
 
     private void updateNameOnBackend(String newName) {
