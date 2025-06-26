@@ -110,9 +110,10 @@ public class AddBankAccountActivity extends AppCompatActivity {
                     Request.Method.POST, url, jsonBody,
                     response -> {
                         try {
-                            JSONObject profile = response.getJSONObject("profile");
+                            JSONObject data = response.getJSONObject("data");
+                            JSONObject profile = data.getJSONObject("profile");
                             String emailFromResponse = profile.getString("email");
-                            String token = response.getString("token");
+                            String token = data.getString("token");
 
                             // Decode using JwtUtils
                             String role = JwtUtils.getRoleFromToken(token);

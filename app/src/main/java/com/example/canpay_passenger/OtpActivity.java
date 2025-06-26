@@ -98,16 +98,19 @@ public class OtpActivity extends AppCompatActivity {
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                     Request.Method.POST, url, jsonBody,
                     response -> {
-                        boolean isNewUser = response.optBoolean("newUser", true);
-                        if (isNewUser) {
-                            Toast.makeText(this, "OTP verified. Please complete your profile.", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(OtpActivity.this, NameActivity.class);
-                            intent.putExtra("email", email);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            try {
-                                String token = response.getString("token");
+                        try {
+                            JSONObject data = response.getJSONObject("data");
+                            boolean isNewUser = data.optBoolean("newUser", true);
+
+                            if (isNewUser) {
+                                Toast.makeText(this, "OTP verified. Please complete your profile.", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(OtpActivity.this, NameActivity.class);
+                                intent.putExtra("email", email);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                String token = data.getString("token");
+
                                 // Decode using JwtUtils
                                 String role = JwtUtils.getRoleFromToken(token);
                                 String userEmail = JwtUtils.getEmailFromToken(token);
@@ -120,17 +123,20 @@ public class OtpActivity extends AppCompatActivity {
                                 editor.putString("email", userEmail);
                                 editor.putString("user_name", userName);
                                 editor.putInt("user_id", userId);
+                                editor.putString("token", token);
                                 editor.apply();
-                                Log.d("TOKEN_DECODE", "Saved role: " + role + ", id: " + userId);
 
+                                Log.d("TOKEN_DECODE", "Saved role: " + role + ", id: " + userId);
                                 Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(OtpActivity.this, HomeActivity.class));
                                 finish();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                Toast.makeText(this, "Failed to parse profile", Toast.LENGTH_SHORT).show();
                             }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(this, "Invalid server response", Toast.LENGTH_SHORT).show();
                         }
+
                     },
                     error -> {
                         Toast.makeText(this, "Invalid OTP", Toast.LENGTH_SHORT).show();
