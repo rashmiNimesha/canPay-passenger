@@ -22,6 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.example.canpay_passenger.utils.PreferenceManager;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -63,10 +65,14 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void loadUserData() {
-        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-        String userName = prefs.getString("user_name", "");
-        String userPhone = prefs.getString("email", "");
-        String userNic = prefs.getString("nic", "");
+//        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
+//        String userName = prefs.getString("user_name", "");
+//        String userPhone = prefs.getString("email", "");
+//        String userNic = prefs.getString("nic", "");
+        String userName = PreferenceManager.getUserName(this);
+        String userPhone = PreferenceManager.getEmail(this);
+        String userNic = PreferenceManager.getNic(this);
+
 
         tvUserName.setText(userName);
         tvUserPhone.setText(userPhone);
@@ -154,8 +160,10 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void logout() {
-        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-        prefs.edit().clear().apply();
+//        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
+//        prefs.edit().clear().apply();
+//
+        PreferenceManager.clearSession(this);
 
         Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -1,7 +1,8 @@
 package com.example.canpay_passenger;
 
+import static com.android.volley.VolleyLog.TAG;
+
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,18 +14,14 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.canpay_passenger.utils.JwtUtils;
+import com.android.volley.VolleyError;
+import com.example.canpay_passenger.utils.ApiHelper;
+import com.example.canpay_passenger.utils.Endpoints;
+import com.example.canpay_passenger.utils.PreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class AddBankAccountActivity extends AppCompatActivity {
     @Override
@@ -88,8 +85,15 @@ public class AddBankAccountActivity extends AppCompatActivity {
                 btnNext.setEnabled(true); // re-enable
                 return;
             }
+            // Retrieve token from SharedPreferences
+            String token = PreferenceManager.getToken(this);
+            if (token == null) {
+                Log.e(TAG, "No token found in SharedPreferences");
+                Toast.makeText(this, "Authentication token missing", Toast.LENGTH_LONG).show();
+                btnNext.setEnabled(true);
+                return;
+            }
 
-            String url = "http://10.0.2.2:8081/api/v1/auth/create-profile";
 
             JSONObject jsonBody = new JSONObject();
             try {
@@ -100,69 +104,60 @@ public class AddBankAccountActivity extends AppCompatActivity {
                 jsonBody.put("bank", bank);
                 jsonBody.put("accName", accountName);
             } catch (JSONException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "JSON error", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "JSON creation error", e);
+                Toast.makeText(this, "Error creating request", Toast.LENGTH_SHORT).show();
                 btnNext.setEnabled(true);
                 return;
             }
 
-            JsonObjectRequest request = new JsonObjectRequest(
-                    Request.Method.POST, url, jsonBody,
-                    response -> {
-                        try {
-                            JSONObject data = response.getJSONObject("data");
-                            JSONObject profile = data.getJSONObject("profile");
-                            String emailFromResponse = profile.getString("email");
-                            String token = data.getString("token");
 
-                            // Decode using JwtUtils
-                            String role = JwtUtils.getRoleFromToken(token);
-                            String userEmail = JwtUtils.getEmailFromToken(token);
-                            String userName = JwtUtils.getNameFromToken(token);
-                            int userId = JwtUtils.getUserIdFromToken(token);
-                            String nicToken = JwtUtils.getNicFromToken(token);
+            ApiHelper.postJson(this, Endpoints.CREATE_PROFILE, jsonBody, token, new ApiHelper.Callback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        JSONObject data = response.getJSONObject("data");
+                        JSONObject profile = data.getJSONObject("profile");
+                        String emailFromResponse = profile.getString("email");
+                        String newToken = data.getString("token");
+                        String userRole = profile.getString("role");
+                        String userName = profile.optString("name", null);
+                        String nic = profile.optString("nic", null);
+                        int userId = profile.optInt("id", 0);
 
-                            SharedPreferences preferences = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("token", token);
-                            editor.putString("role", role);
-                            editor.putString("email", userEmail);
-                            editor.putString("user_name", userName);
-                            editor.putInt("user_id", userId);
-                            editor.putString("nic", nicToken);
-                            editor.apply();
 
-                            Log.d("TOKEN_DECODE", "Saved role: " + role + ", id: " + userId);
-                            Toast.makeText(this, "Profile created successfully", Toast.LENGTH_SHORT).show();
+                        // Save updated session data
+                        PreferenceManager.saveUserSession(
+                                AddBankAccountActivity.this,
+                                emailFromResponse,
+                                newToken,
+                                userRole,
+                                userName,
+                                userId,
+                              nic
+                        );
 
-                            Intent intent = new Intent(AddBankAccountActivity.this, PincodeActivity.class);
-                            intent.putExtra("email", emailFromResponse);
-                            startActivity(intent);
-                            finish();
+                        Log.d(TAG, "Profile created for email: " + emailFromResponse);
+                        Toast.makeText(AddBankAccountActivity.this, "Profile created successfully", Toast.LENGTH_SHORT).show();
 
-                        } catch (JSONException e) {
-                            Log.e("PARSE_ERROR", "Failed to parse response: " + e.getMessage());
-                            Toast.makeText(this, "Parsing error", Toast.LENGTH_SHORT).show();
-                            btnNext.setEnabled(true);
-                        }
-                    },
-                    error -> {
-                        Toast.makeText(this, "Failed to create profile", Toast.LENGTH_SHORT).show();
-                        Log.e("CREATE_PROFILE", "Error: " + error.toString());
+                        Intent intent = new Intent(AddBankAccountActivity.this, PincodeActivity.class);
+                        intent.putExtra("email", emailFromResponse);
+                        startActivity(intent);
+                        finish();
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing response", e);
+                        Toast.makeText(AddBankAccountActivity.this, "Invalid server response", Toast.LENGTH_SHORT).show();
                         btnNext.setEnabled(true);
                     }
-            ) {
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("Content-Type", "application/json");
-                    headers.put("Accept", "application/json");
-                    return headers;
                 }
-            };
 
-            RequestQueue queue = Volley.newRequestQueue(this);
-            queue.add(request);
+                @Override
+                public void onError(VolleyError error) {
+                    ApiHelper.handleVolleyError(AddBankAccountActivity.this, error, TAG);
+                    btnNext.setEnabled(true);
+                }
+            });
+
+
         });
 
 

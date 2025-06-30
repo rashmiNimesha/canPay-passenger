@@ -1,7 +1,8 @@
 package com.example.canpay_passenger;
 
+import static com.android.volley.VolleyLog.TAG;
+
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -13,15 +14,15 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.canpay_passenger.utils.JwtUtils;
+import com.android.volley.VolleyError;
+import com.example.canpay_passenger.config.ApiConfig;
+import com.example.canpay_passenger.utils.ApiHelper;
+import com.example.canpay_passenger.utils.Endpoints;
+import com.example.canpay_passenger.utils.PreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 public class OtpActivity extends AppCompatActivity {
 
@@ -30,6 +31,8 @@ public class OtpActivity extends AppCompatActivity {
     private Button btnNext;
     private CountDownTimer timer;
     private int resendSeconds = 60;
+    private String email;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class OtpActivity extends AppCompatActivity {
         tvResend = findViewById(R.id.tv_resend);
         btnNext = findViewById(R.id.btn_next);
         ImageButton btnBack = findViewById(R.id.btn_back);
+        email = getIntent().getStringExtra("email");
 
         // Auto move focus
         for (int i = 0; i < otpBoxes.length; i++) {
@@ -66,90 +70,7 @@ public class OtpActivity extends AppCompatActivity {
         }
 
         // NEXT Button: Validate OTP and navigate to NameActivity
-        btnNext.setOnClickListener(v -> {
-            StringBuilder otp = new StringBuilder();
-            for (EditText box : otpBoxes) {
-                String digit = box.getText().toString().trim();
-                if (digit.isEmpty()) {
-                    Toast.makeText(this, "Enter all 6 digits", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                otp.append(digit);
-            }
-
-            String email = getIntent().getStringExtra("email");
-            if (email == null || email.isEmpty()) {
-                Toast.makeText(this, "Missing email", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            String url = "http://10.0.2.2:8081/api/v1/auth/verify-otp";
-
-            JSONObject jsonBody = new JSONObject();
-            try {
-                jsonBody.put("email", email);
-                jsonBody.put("otp", otp.toString());
-                jsonBody.put("role", "PASSENGER");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return;
-            }
-
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                    Request.Method.POST, url, jsonBody,
-                    response -> {
-                        try {
-                            JSONObject data = response.getJSONObject("data");
-                            boolean isNewUser = data.optBoolean("newUser", true);
-
-                            if (isNewUser) {
-                                Toast.makeText(this, "OTP verified. Please complete your profile.", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(OtpActivity.this, NameActivity.class);
-                                intent.putExtra("email", email);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                String token = data.getString("token");
-
-                                // Decode using JwtUtils
-                                String role = JwtUtils.getRoleFromToken(token);
-                                String userEmail = JwtUtils.getEmailFromToken(token);
-                                String userName = JwtUtils.getNameFromToken(token);
-                                int userId = JwtUtils.getUserIdFromToken(token);
-                                String nic = JwtUtils.getNicFromToken(token);
-
-                                SharedPreferences preferences = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-                                SharedPreferences.Editor editor = preferences.edit();
-                                editor.putString("role", role);
-                                editor.putString("email", userEmail);
-                                editor.putString("user_name", userName);
-                                editor.putInt("user_id", userId);
-                                editor.putString("nic", nic);
-                                editor.putString("token", token);
-                                editor.apply();
-
-                                Log.d("TOKEN_DECODE", "Saved role: " + role + ", id: " + userId);
-                                Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(OtpActivity.this, HomeActivity.class));
-                                finish();
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(this, "Invalid server response", Toast.LENGTH_SHORT).show();
-                        }
-
-                    },
-                    error -> {
-                        Toast.makeText(this, "Invalid OTP", Toast.LENGTH_SHORT).show();
-                        Log.e("OTP_VERIFY", "Error: " + error.toString());
-                    }
-            );
-
-            RequestQueue queue = Volley.newRequestQueue(this);
-            queue.add(jsonObjectRequest);
-        });
-
+        btnNext.setOnClickListener(v -> handleOtpVerification());
 
         // Back button: Navigate to PhoneNoActivity
         btnBack.setOnClickListener(v -> {
@@ -163,13 +84,83 @@ public class OtpActivity extends AppCompatActivity {
         startResendTimer();
 
         // Resend click
-
-        String email = getIntent().getStringExtra("email");
-
         tvResend.setOnClickListener(v -> {
             if (tvResend.isEnabled()) {
                 resendOtp(email); // call resend logic
                 startResendTimer();
+            }
+        });
+
+    }
+
+    private void handleOtpVerification() {
+        StringBuilder otp = new StringBuilder();
+        for (EditText box : otpBoxes) {
+            String digit = box.getText().toString().trim();
+            if (digit.isEmpty()) {
+                Toast.makeText(this, "Enter all 6 digits", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            otp.append(digit);
+        }
+
+        if (email == null || email.isEmpty()) {
+            Toast.makeText(this, "Missing email", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JSONObject body = new JSONObject();
+        try {
+            body.put("email", email);
+            body.put("otp", otp.toString());
+            body.put("role", ApiConfig.USER_ROLE);
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON creation error", e);
+            Toast.makeText(this, "Error creating request", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ApiHelper.postJson(this, Endpoints.VERIFY_OTP, body, null, new ApiHelper.Callback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    JSONObject data = response.getJSONObject("data");
+                    boolean isNewUser = data.getBoolean("newUser");
+                    String token = data.getString("token");
+                    JSONObject profile = data.getJSONObject("profile");
+                    String userEmail = profile.getString("email");
+                    String userRole = profile.getString("role");
+                    String userName = profile.optString("name", null);
+                    String nic = profile.optString("nic", null);
+                    int userId = profile.optInt("id", 0);
+
+                    // Save token and role to EncryptedSharedPreferences
+                    PreferenceManager.saveUserSession(OtpActivity.this, userEmail, token, userRole, userName, userId, nic);
+                    Log.d(TAG, "Saved session for email: " + userEmail);
+
+                    if (isNewUser) {
+                        Toast.makeText(OtpActivity.this, "OTP verified. Please complete your profile.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(OtpActivity.this, NameActivity.class);
+//                        intent.putExtra("email", userEmail);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(OtpActivity.this, "Welcome back!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(OtpActivity.this, HomeActivity.class);
+//                        intent.putExtra("email", userEmail);
+                        startActivity(intent);
+                        finish();
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error parsing response", e);
+                    Toast.makeText(OtpActivity.this, "Invalid server response", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                ApiHelper.handleVolleyError(OtpActivity.this, error, TAG);
+                Toast.makeText(OtpActivity.this, "Invalid OTP or other error", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -193,29 +184,25 @@ public class OtpActivity extends AppCompatActivity {
             return;
         }
 
-        String url = "http://10.0.2.2:8081/api/v1/auth/send-otp"; // or your real IP
-
-        JSONObject jsonBody = new JSONObject();
+        JSONObject body = new JSONObject();
         try {
-            jsonBody.put("email", email);
+            body.put("email", email);
         } catch (JSONException e) {
             e.printStackTrace();
             return;
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.POST, url, jsonBody,
-                response -> {
-                    Toast.makeText(this, "OTP resent to " + email, Toast.LENGTH_SHORT).show();
-                },
-                error -> {
-                    Log.e("OTP_RESEND", "Error: " + error.toString());
-                    Toast.makeText(this, "Failed to resend OTP: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-        );
+        ApiHelper.postJson(this, Endpoints.SEND_OTP, body, null, new ApiHelper.Callback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                Toast.makeText(OtpActivity.this, "OTP resent to " + email, Toast.LENGTH_SHORT).show();
+            }
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(jsonObjectRequest);
+            @Override
+            public void onError(VolleyError error) {
+                ApiHelper.handleVolleyError(OtpActivity.this, error, TAG);
+            }
+        });
     }
 
     @Override

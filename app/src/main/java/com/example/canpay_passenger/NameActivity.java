@@ -38,11 +38,6 @@ public class NameActivity extends AppCompatActivity {
                 return;
             }
 
-            if (email == null || email.isEmpty()) {
-                Toast.makeText(this, "Missing email", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
             // Pass name and email to NIC entry screen
             Intent intent = new Intent(NameActivity.this, NICEntryActivity.class);
             intent.putExtra("name", name);

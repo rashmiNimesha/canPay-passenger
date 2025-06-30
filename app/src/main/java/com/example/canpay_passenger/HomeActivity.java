@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.example.canpay_passenger.utils.PreferenceManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.fragment.app.Fragment;
@@ -45,8 +47,7 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-        String userName = prefs.getString("user_name", "User");
+        String userName = PreferenceManager.getUserName(this);
         tv_greeting.setText("Hi, " + userName);
 
         // Default fragment
@@ -87,8 +88,8 @@ public class HomeActivity extends AppCompatActivity {
 
     // Method to start recharge activity (call this from HomeFragment)
     public void startRechargeActivity() {
-        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-        String email = prefs.getString("email", null);
+        String email = PreferenceManager.getEmail(this);
+
         if (email != null) {
             Intent intent = new Intent(this, RechargeAmountActivity.class);
             intent.putExtra("email", email);
@@ -98,6 +99,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
     }
+
 
     private void startQrScanner() {
         Intent intent = new Intent(this, QrScanActivity.class);
