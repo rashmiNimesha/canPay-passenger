@@ -16,7 +16,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.canpay_passenger.config.ApiConfig;
+import com.example.canpay_passenger.request.VolleySingleton;
+import com.example.canpay_passenger.utils.ApiHelper;
+import com.example.canpay_passenger.utils.Endpoints;
+import com.example.canpay_passenger.utils.JwtUtils;
+import com.example.canpay_passenger.utils.PreferenceManager;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,23 +38,25 @@ public class RechargeAmountActivity extends AppCompatActivity {
     private EditText etAmount;
     private Button btnNext;
     private ImageButton btnBack;
-
+    private  String userEmail, token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recharge_amount);
 
         initViews();
-
-        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-        String email = prefs.getString("email", null);
-
-        if (email != null) {
-            loadBankAccountsFromBackend(email);
-        } else {
-            Toast.makeText(this, "Email not found", Toast.LENGTH_SHORT).show();
-        }
         setupClickListeners();
+
+        token = PreferenceManager.getToken(this);
+
+        if (token != null) {
+            userEmail = JwtUtils.getEmailFromToken(token); // extract from JWT
+            Log.d("RECHARGE", "Token User: " + userEmail);
+            loadBankAccountsFromBackend(token); // send only token, not email or role
+        } else {
+            Toast.makeText(this, "Missing token", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void initViews() {
@@ -57,50 +66,23 @@ public class RechargeAmountActivity extends AppCompatActivity {
         btnNext = findViewById(R.id.btn_next);
     }
 
-    private void loadBankAccountsFromBackend(String email) {
-        String url = "http://10.0.2.2:8081/api/v1/bank-account/by-email?email=" + email;
-        Log.d("RECHARGE", "Requesting bank accounts from: " + url);
-
-        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-        String token = prefs.getString("token", null);
-
-        if (token == null) {
-            Toast.makeText(this, "Missing token", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void loadBankAccountsFromBackend(String token) {
+        String url = ApiConfig.getBaseUrl() + "/api/v1/bank-account/by-email";
 
         JsonArrayRequest request = new JsonArrayRequest(
-                Request.Method.GET, url, null,
+                Request.Method.GET,
+                url,
+                null,
                 response -> {
-                    List<String> accounts = new ArrayList<>();
-                    accounts.add("Select bank account");
-
-                    for (int i = 0; i < response.length(); i++) {
-                        try {
-                            JSONObject obj = response.getJSONObject(i);
-                            String bank = obj.getString("bank");
-                            String acc = obj.getString("accountNumber");
-                            String masked = "****" + acc.substring(Math.max(0, acc.length() - 4));
-                            accounts.add(bank + " - " + masked);
-                        } catch (JSONException e) {
-                            Log.e("RECHARGE", "JSON parse error: " + e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
-
-                    runOnUiThread(() -> {
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                                RechargeAmountActivity.this,
-                                android.R.layout.simple_spinner_dropdown_item,
-                                accounts
-                        );
-                        spinnerBankAccount.setAdapter(adapter);
-                    });
+                    List<String> accounts = parseBankAccounts(response);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            this,
+                            android.R.layout.simple_spinner_dropdown_item,
+                            accounts
+                    );
+                    spinnerBankAccount.setAdapter(adapter);
                 },
-                error -> {
-                    Log.e("RECHARGE", "Failed to fetch bank accounts: " + error.toString());
-                    Toast.makeText(this, "Failed to load bank accounts", Toast.LENGTH_SHORT).show();
-                }
+                error -> ApiHelper.handleVolleyError(this, error, "RECHARGE")
         ) {
             @Override
             public Map<String, String> getHeaders() {
@@ -110,8 +92,28 @@ public class RechargeAmountActivity extends AppCompatActivity {
             }
         };
 
-        Volley.newRequestQueue(this).add(request);
+        VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
+
+    private List<String> parseBankAccounts(JSONArray response) {
+        List<String> accounts = new ArrayList<>();
+        accounts.add("Select bank account");
+
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                JSONObject obj = response.getJSONObject(i);
+                String bank = obj.getString("bankName");
+                String acc = obj.getString("accountNumber");
+                String masked = "****" + acc.substring(Math.max(0, acc.length() - 4));
+                accounts.add(bank + " - " + masked);
+            } catch (JSONException e) {
+                Log.e("RECHARGE", "JSON parse error", e);
+            }
+        }
+
+        return accounts;
+    }
+
 
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
