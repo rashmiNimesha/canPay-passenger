@@ -15,15 +15,18 @@ public class EnterAmountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_amount);
-
-        // Get QR result from intent
-        String qrResult = getIntent().getStringExtra("QR_RESULT");
+        String busId = getIntent().getStringExtra("busId");
+        String operatorId = getIntent().getStringExtra("operatorId");
+        // Get QR result from intepant
+//        String qrResult = getIntent().getStringExtra("QR_RESULT");
 
         // Display payee info
         TextView payeeInfo = findViewById(R.id.tv_payee_info);
-        if (qrResult != null) {
-            payeeInfo.setText("You're paying to: " + qrResult);
-        }
+        payeeInfo.setText("Scan successful. Enter amount to pay.");
+
+//        if (qrResult != null) {
+//            payeeInfo.setText("You're paying to: " + qrResult);
+//        }
 
         EditText amountEdit = findViewById(R.id.et_amount);
         Button nextButton = findViewById(R.id.btn_next);
@@ -50,10 +53,11 @@ public class EnterAmountActivity extends AppCompatActivity {
                 return;
             }
 
-            // Start ConfirmPaymentActivity and pass data
+
             Intent intent = new Intent(EnterAmountActivity.this, ConfirmPaymentActivity.class);
-            intent.putExtra("QR_RESULT", qrResult);
-            intent.putExtra("AMOUNT", amount);
+            intent.putExtra("busId", busId);
+            intent.putExtra("operatorId", operatorId);
+            intent.putExtra("amount", amount);
             startActivity(intent);
             finish();
         });

@@ -1,91 +1,82 @@
 package com.example.canpay_passenger;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.widget.ImageButton;
+import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import com.google.zxing.ResultPoint;
-import com.journeyapps.barcodescanner.BarcodeCallback;
-import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.DecoratedBarcodeView;
-import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class QrScanActivity extends AppCompatActivity {
-
-    private DecoratedBarcodeView barcodeView;
-    private ImageButton btnBack, btnFlash, btnGallery;
-    private boolean isFlashOn = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qr_scan);
+        setContentView(R.layout.activity_enter_amount);
 
-        // Initialize views
-        barcodeView = findViewById(R.id.barcode_scanner);
-        btnBack = findViewById(R.id.btn_back);
-        btnFlash = findViewById(R.id.btn_flash);
-        btnGallery = findViewById(R.id.btn_gallery);
+        // Default UUIDs for testing
+        String busId = "66666666-6666-6666-6666-666666666666";
+        String operatorId = "971bbec0-5a9c-4948-8132-5a2db4666f6b";
 
-        // Set up barcode scanner
-        barcodeView.decodeContinuous(callback);
-
-        // Set up button click listeners
-        btnBack.setOnClickListener(v -> finish());
-
-        btnFlash.setOnClickListener(v -> toggleFlash());
-
-        btnGallery.setOnClickListener(v -> {
-            // Handle gallery button click
-            Toast.makeText(this, "Gallery feature coming soon", Toast.LENGTH_SHORT).show();
-        });
-    }
-
-    private void toggleFlash() {
-        if (isFlashOn) {
-            barcodeView.setTorchOff();
-            btnFlash.setImageResource(R.drawable.ic_flash_off);
-            isFlashOn = false;
-        } else {
-            barcodeView.setTorchOn();
-            btnFlash.setImageResource(R.drawable.ic_flash_on);
-            isFlashOn = true;
-        }
-    }
-
-    private BarcodeCallback callback = new BarcodeCallback() {
-        @Override
-        public void barcodeResult(BarcodeResult result) {
-            if (result.getText() != null) {
-                // QR Code scanned successfully - Navigate to EnterAmountActivity
-                Intent intent = new Intent(QrScanActivity.this, EnterAmountActivity.class);
-                intent.putExtra("QR_RESULT", result.getText());
-                startActivity(intent);
-                finish(); // Close the scanner screen
+        // Changed: Enable QR parsing for dynamic UUIDs
+        String qrResult = getIntent().getStringExtra("QR_RESULT");
+        if (qrResult != null) {
+            try {
+                // Expect QR code JSON: {"busId":"66666666-6666-6666-6666-666666666666","operatorId":"971bbec0-5a9c-4948-8132-5a2db4666f6b"}
+                JSONObject json = new JSONObject(qrResult);
+                busId = json.getString("busId");
+                operatorId = json.getString("operatorId");
+                Log.d("QrScanActivity", "Parsed QR: busId=" + busId + ", operatorId=" + operatorId);
+            } catch (JSONException e) {
+                Log.e("QrScanActivity", "Invalid QR code format: " + e.getMessage());
+                Toast.makeText(this, "Invalid QR code format", Toast.LENGTH_SHORT).show();
             }
         }
 
-        @Override
-        public void possibleResultPoints(List<ResultPoint> resultPoints) {
-            // Handle possible result points if needed
-        }
-    };
+        // Display payee info
+        TextView payeeInfo = findViewById(R.id.tv_payee_info);
+        payeeInfo.setText("Scan successful. Enter amount to pay.");
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        barcodeView.resume();
-    }
+        EditText amountEdit = findViewById(R.id.et_amount);
+        Button nextButton = findViewById(R.id.btn_next);
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        barcodeView.pause();
+        String finalBusId = busId;
+        String finalOperatorId = operatorId;
+        nextButton.setOnClickListener(v -> {
+            String amount = amountEdit.getText().toString().trim();
+
+            // Validate amount
+            if (TextUtils.isEmpty(amount)) {
+                amountEdit.setError("Please enter an amount");
+                amountEdit.requestFocus();
+                return;
+            }
+            try {
+                double value = Double.parseDouble(amount);
+                if (value <= 0) {
+                    amountEdit.setError("Enter a valid amount");
+                    amountEdit.requestFocus();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                amountEdit.setError("Enter a valid amount");
+                amountEdit.requestFocus();
+                return;
+            }
+
+            // Changed: Log intent data
+            Log.d("QrScanActivity", "Navigating to ConfirmPaymentActivity with busId=" + finalBusId + ", operatorId=" + finalOperatorId + ", amount=" + amount);
+
+            Intent intent = new Intent(QrScanActivity.this, ConfirmPaymentActivity.class);
+            intent.putExtra("busId", finalBusId);
+            intent.putExtra("operatorId", finalOperatorId);
+            intent.putExtra("amount", amount);
+            startActivity(intent);
+            finish();
+        });
     }
 }
