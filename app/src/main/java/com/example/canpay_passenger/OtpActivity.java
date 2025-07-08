@@ -141,13 +141,13 @@ public class OtpActivity extends AppCompatActivity {
                     if (isNewUser) {
                         Toast.makeText(OtpActivity.this, "OTP verified. Please complete your profile.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(OtpActivity.this, NameActivity.class);
-//                        intent.putExtra("email", userEmail);
+                       intent.putExtra("email", userEmail);
                         startActivity(intent);
                         finish();
                     } else {
                         Toast.makeText(OtpActivity.this, "Welcome back!", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(OtpActivity.this, HomeActivity.class);
-//                        intent.putExtra("email", userEmail);
+                       intent.putExtra("email", userEmail);
                         startActivity(intent);
                         finish();
                     }
