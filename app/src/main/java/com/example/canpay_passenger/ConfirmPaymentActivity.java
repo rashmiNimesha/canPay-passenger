@@ -31,7 +31,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         operatorId = getIntent().getStringExtra("operatorId");
         amount = getIntent().getStringExtra("amount");
 
-        // Changed: Initialize UI with placeholders to avoid null references
+        // Initialize UI with placeholders to avoid null references
         tvTitle = findViewById(R.id.tv_confirm_title);
         tvBusNumber = findViewById(R.id.tv_bus_number);
         tvBusRoute = findViewById(R.id.tv_bus_route);
@@ -52,7 +52,6 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         swipeToPay = findViewById(R.id.btn_swipe_to_pay);
         swipeToPay.setOnClickListener(v -> processPayment());
 
-        // Changed: Log intent data
         Log.d("ConfirmPaymentActivity", "Received: busId=" + busId + ", operatorId=" + operatorId + ", amount=" + amount);
 
         fetchBusAndOperatorDetails();
@@ -81,7 +80,6 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
                         busRoute = data.getString("busRoute");
                         conductor = data.getString("operatorName");
 
-                        // Changed: Update UI after API response
                         tvTitle.setText("Pay " + amount + " LKR to " + conductor + "?");
                         tvBusNumber.setText(busNumber);
                         tvBusRoute.setText(busRoute);

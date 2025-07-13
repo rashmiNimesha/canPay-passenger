@@ -3,30 +3,24 @@ package com.example.canpay_passenger;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.widget.TextView;
-import android.widget.EditText;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.EditText;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class EnterAmountActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_amount);
+
+        // Retrieve busId and operatorId from QrScanActivity
         String busId = getIntent().getStringExtra("busId");
         String operatorId = getIntent().getStringExtra("operatorId");
-        // Get QR result from intepant
-//        String qrResult = getIntent().getStringExtra("QR_RESULT");
 
         // Display payee info
         TextView payeeInfo = findViewById(R.id.tv_payee_info);
         payeeInfo.setText("Scan successful. Enter amount to pay.");
-
-//        if (qrResult != null) {
-//            payeeInfo.setText("You're paying to: " + qrResult);
-//        }
 
         EditText amountEdit = findViewById(R.id.et_amount);
         Button nextButton = findViewById(R.id.btn_next);
@@ -53,7 +47,7 @@ public class EnterAmountActivity extends AppCompatActivity {
                 return;
             }
 
-
+            // Navigate to ConfirmPaymentActivity
             Intent intent = new Intent(EnterAmountActivity.this, ConfirmPaymentActivity.class);
             intent.putExtra("busId", busId);
             intent.putExtra("operatorId", operatorId);
