@@ -7,6 +7,9 @@ public class Endpoints {
 
     public static final String LOAD_BANK_ACCS = "/api/v1/bank-account/by-email";
 
+    public static final String LOAD_BANK_LIST = "/api/v1/bank-account/list";
+public static final String ADD_BANK_ACCOUNT = "/api/v1/bank-account/add";
+
     public  static final String  CHECK_USER = "/api/v1/auth/check-user";
     public static final String PASSENGER_WALLET_RECHARGE = "/api/v1/wallet/recharge";
 

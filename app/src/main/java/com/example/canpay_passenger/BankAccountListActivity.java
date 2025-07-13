@@ -1,36 +1,27 @@
 package com.example.canpay_passenger;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
-
+import com.android.volley.VolleyError;
+import com.example.canpay_passenger.utils.ApiHelper;
+import com.example.canpay_passenger.utils.Endpoints;
+import com.example.canpay_passenger.utils.PreferenceManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BankAccountListActivity extends AppCompatActivity implements BankAccountAdapter.OnBankAccountClickListener {
-
     private static final int ADD_BANK_REQUEST = 1001;
     private RecyclerView recyclerView;
     private BankAccountAdapter adapter;
@@ -58,86 +49,75 @@ public class BankAccountListActivity extends AppCompatActivity implements BankAc
         recyclerView = findViewById(R.id.rv_bank_accounts);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        fetchBankAccounts();
+        bankAccounts = new ArrayList<>();
+        adapter = new BankAccountAdapter(bankAccounts, this);
+        recyclerView.setAdapter(adapter);
 
+        fetchBankAccounts();
     }
 
     private void fetchBankAccounts() {
-        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-        String email = prefs.getString("email", null);
-        String token = prefs.getString("token", null);
-
-        if (email == null || token == null) {
+        String token = PreferenceManager.getToken(this);
+        if (token == null) {
             Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, PhoneNoActivity.class));
+            finish();
             return;
         }
 
-        String url = "http://10.0.2.2:8081/api/v1/user-service/passengers/bank-account?email=" + email;
-
-        com.android.volley.toolbox.JsonObjectRequest request = new com.android.volley.toolbox.JsonObjectRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    try {
+        ApiHelper.getJson(this, Endpoints.LOAD_BANK_LIST, token, new ApiHelper.Callback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    if (response.getBoolean("success")) {
                         JSONArray data = response.getJSONArray("data");
                         handleBankAccountResponse(data);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Toast.makeText(this, "Unexpected response format", Toast.LENGTH_SHORT).show();
+                    } else {
+                        String message = response.optString("message", "Failed to fetch bank accounts");
+                        Toast.makeText(BankAccountListActivity.this, message, Toast.LENGTH_SHORT).show();
+                        Log.e("BankAccountListActivity", "API error: " + message);
                     }
-                },
-                error -> {
-                    Toast.makeText(this, "Failed to fetch bank accounts", Toast.LENGTH_SHORT).show();
-                    Log.e("BANK_FETCH", "Error: " + error.toString());
+                } catch (JSONException e) {
+                    Log.e("BankAccountListActivity", "Error parsing response: " + e.getMessage());
+                    Toast.makeText(BankAccountListActivity.this, "Unexpected response format", Toast.LENGTH_SHORT).show();
                 }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer " + token);
-                return headers;
             }
-        };
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(request);
+            @Override
+            public void onError(VolleyError error) {
+                ApiHelper.handleVolleyError(BankAccountListActivity.this, error, "BankAccountListActivity");
+            }
+        });
     }
 
     private void handleBankAccountResponse(JSONArray response) {
-        if (bankAccounts == null) {
-            bankAccounts = new ArrayList<>();
-        } else {
-            bankAccounts.clear();
-        }
-
+        bankAccounts.clear();
         try {
             for (int i = 0; i < response.length(); i++) {
                 JSONObject obj = response.getJSONObject(i);
-                String bank = obj.getString("bankName");
-                String accName = obj.getString("accountHolderName");
+//                String bankName = obj.getString("bankName");
+//                long accountNumber = obj.getLong("accountNumber");
+                String accountName = obj.getString("accountName");
+             //   boolean isDefault = obj.getBoolean("default");
 
-                bankAccounts.add(new BankAccount(bank, accName));
+                bankAccounts.add(new BankAccount( accountName));
             }
-
-            if (adapter == null) {
-                adapter = new BankAccountAdapter(bankAccounts, this);
-                recyclerView.setAdapter(adapter);
-            } else {
-                adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
+            if (bankAccounts.isEmpty()) {
+                Toast.makeText(this, "No bank accounts found", Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e("BankAccountListActivity", "Error parsing bank account data: " + e.getMessage());
             Toast.makeText(this, "Error parsing bank account data", Toast.LENGTH_SHORT).show();
         }
     }
 
-
     @Override
     public void onBankAccountClick(BankAccount account) {
         Intent intent = new Intent(this, EditBankAccountActivity.class);
-        intent.putExtra("account_name", account.getAccountName());
         intent.putExtra("bank", account.getBank());
+        intent.putExtra("accountNumber", account.getAccountNumber());
+        intent.putExtra("accountName", account.getAccountName());
         startActivity(intent);
     }
 

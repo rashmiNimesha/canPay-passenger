@@ -1,7 +1,6 @@
 package com.example.canpay_passenger;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.ArrayAdapter;
@@ -11,20 +10,14 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
+import com.android.volley.VolleyError;
+import com.example.canpay_passenger.utils.ApiHelper;
+import com.example.canpay_passenger.utils.Endpoints;
+import com.example.canpay_passenger.utils.PreferenceManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class AddNewBankAccountActivity extends AppCompatActivity {
-
     private Spinner spinnerBank;
     private EditText etAccountNumber, etAccountName;
 
@@ -48,7 +41,8 @@ public class AddNewBankAccountActivity extends AppCompatActivity {
                 "Commercial Bank",
                 "National Savings Bank",
                 "People's Bank",
-                "HSBC"
+                "HSBC",
+                "Seylan Bank"
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_dropdown_item, banks);
@@ -56,7 +50,7 @@ public class AddNewBankAccountActivity extends AppCompatActivity {
 
         btnAdd.setOnClickListener(v -> {
             String bank = spinnerBank.getSelectedItem().toString();
-            String accountNumber = etAccountNumber.getText().toString().trim();
+            String accountNumberStr = etAccountNumber.getText().toString().trim();
             String accountName = etAccountName.getText().toString().trim();
 
             // Validation
@@ -64,8 +58,21 @@ public class AddNewBankAccountActivity extends AppCompatActivity {
                 Toast.makeText(this, "Please select a bank", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (TextUtils.isEmpty(accountNumber)) {
+            if (TextUtils.isEmpty(accountNumberStr)) {
                 etAccountNumber.setError("Enter account number");
+                etAccountNumber.requestFocus();
+                return;
+            }
+            long accountNumber;
+            try {
+                accountNumber = Long.parseLong(accountNumberStr);
+                if (accountNumber <= 0) {
+                    etAccountNumber.setError("Invalid account number");
+                    etAccountNumber.requestFocus();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                etAccountNumber.setError("Invalid account number format");
                 etAccountNumber.requestFocus();
                 return;
             }
@@ -74,61 +81,62 @@ public class AddNewBankAccountActivity extends AppCompatActivity {
                 etAccountName.requestFocus();
                 return;
             }
+
             sendBankDetails(bank, accountNumber, accountName);
-
         });
-
-
     }
-    private void sendBankDetails(String bank, String accountNumber, String accountName) {
-        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-        String email = prefs.getString("email", null);
-        String token = prefs.getString("token", null);
 
-        if (email == null || token == null) {
-            Toast.makeText(this, "Session expired. Please login again.", Toast.LENGTH_SHORT).show();
+    private void sendBankDetails(String bank, long accountNumber, String accountName) {
+        String token = PreferenceManager.getToken(this);
+        if (token == null) {
+            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, PhoneNoActivity.class));
+            finish();
             return;
         }
 
-        String url = "http://10.0.2.2:8081/api/v1/user-service/passenger-account";
-
+        // Create JSON payload
         JSONObject body = new JSONObject();
         try {
-            body.put("email", email);
-            body.put("accName", accountName);
-            body.put("accNo", accountNumber);
-            body.put("bank", bank);
+            body.put("bankName", bank);
+            body.put("accountNumber", accountNumber);
+            body.put("accountName", accountName);
+            body.put("isDefault", false); // Hardcode to false as per backend change
         } catch (JSONException e) {
-            e.printStackTrace();
             Toast.makeText(this, "Error building request", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.PATCH,
-                url,
-                body,
-                response -> {
-                    Intent intent = new Intent(this, BankAddSuccessActivity.class);
-                    startActivity(intent);
-                    setResult(RESULT_OK);
-                    finish();
-                },
-                error -> {
-                    error.printStackTrace();
-                    Intent intent = new Intent(this, BankAddFailedActivity.class);
+        // Make API call
+        ApiHelper.postJson(this, Endpoints.ADD_BANK_ACCOUNT, body, token, new ApiHelper.Callback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    if (response.getBoolean("success")) {
+                        Toast.makeText(AddNewBankAccountActivity.this, "Bank account added successfully", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(AddNewBankAccountActivity.this, BankAddSuccessActivity.class);
+                        startActivity(intent);
+                        setResult(RESULT_OK);
+                        finish();
+                    } else {
+                        String message = response.optString("message", "Failed to add bank account");
+                        Toast.makeText(AddNewBankAccountActivity.this, message, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(AddNewBankAccountActivity.this, BankAddFailedActivity.class);
+                        startActivity(intent);
+                    }
+                } catch (JSONException e) {
+                    Toast.makeText(AddNewBankAccountActivity.this, "Error parsing response", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(AddNewBankAccountActivity.this, BankAddFailedActivity.class);
                     startActivity(intent);
                 }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer " + token);
-                headers.put("Content-Type", "application/json");
-                return headers;
             }
-        };
 
-        Volley.newRequestQueue(this).add(request);
+            @Override
+            public void onError(VolleyError error) {
+                ApiHelper.handleVolleyError(AddNewBankAccountActivity.this, error, "AddNewBankAccountActivity");
+                Intent intent = new Intent(AddNewBankAccountActivity.this, BankAddFailedActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
