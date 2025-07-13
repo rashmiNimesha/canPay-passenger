@@ -122,7 +122,7 @@ public class AddBankAccountActivity extends AppCompatActivity {
                         String userRole = profile.getString("role");
                         String userName = profile.optString("name", null);
                         String nic = profile.optString("nic", null);
-                        int userId = profile.optInt("id", 0);
+                        String userId = profile.optString("id", null);
 
 
                         // Save updated session data
@@ -132,8 +132,8 @@ public class AddBankAccountActivity extends AppCompatActivity {
                                 newToken,
                                 userRole,
                                 userName,
-                                userId,
                               nic
+                                ,userId
                         );
 
                         Log.d(TAG, "Profile created for email: " + emailFromResponse);

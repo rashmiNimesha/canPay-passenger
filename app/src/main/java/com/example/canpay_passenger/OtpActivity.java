@@ -23,6 +23,8 @@ import com.example.canpay_passenger.utils.PreferenceManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.UUID;
+
 
 public class OtpActivity extends AppCompatActivity {
 
@@ -132,10 +134,11 @@ public class OtpActivity extends AppCompatActivity {
                     String userRole = profile.getString("role");
                     String userName = profile.optString("name", null);
                     String nic = profile.optString("nic", null);
-                    int userId = profile.optInt("id", 0);
+                    String userId = profile.optString("id", null);
+                    Log.d(TAG, "userrrr: " + userId);
 
                     // Save token and role to EncryptedSharedPreferences
-                    PreferenceManager.saveUserSession(OtpActivity.this, userEmail, token, userRole, userName, userId, nic);
+                    PreferenceManager.saveUserSession(OtpActivity.this, userEmail, token, userRole, userName, nic, userId);
                     Log.d(TAG, "Saved session for email: " + userEmail);
 
                     if (isNewUser) {

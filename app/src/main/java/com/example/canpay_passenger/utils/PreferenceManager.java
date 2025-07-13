@@ -32,7 +32,7 @@ public class PreferenceManager {
         }
     }
 
-    public static void saveUserSession(Context context, String email, String token, String role, String userName, int userId, String nic) {
+    public static void saveUserSession(Context context, String email, String token, String role, String userName, String nic, String userId) {
         try {
             SharedPreferences prefs = getEncryptedPrefs(context);
             SharedPreferences.Editor editor = prefs.edit();
@@ -40,7 +40,7 @@ public class PreferenceManager {
             if (token != null) editor.putString("token", token);
             if (role != null) editor.putString("role", role);
             if (userName != null) editor.putString("user_name", userName);
-            if (userId != 0) editor.putInt("user_id", userId);
+            if (userId != null) editor.putString("id", userId);
             if (nic != null) editor.putString("nic", nic);
             editor.apply();
             Log.d(TAG, "Saved user session: email=" + email + ", token=" + token + ", role=" + role);
@@ -74,10 +74,8 @@ public class PreferenceManager {
         return userName;
     }
 
-    public static int getUserId(Context context) {
-        int userId = getEncryptedPrefs(context).getInt("user_id", 0);
-        Log.d(TAG, "Retrieved user_id: " + userId);
-        return userId;
+    public static String getUserId(Context context) {
+        return getEncryptedPrefs(context).getString("id", null);
     }
 
     public static String getNic(Context context) {

@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.VolleyError;
 import com.example.canpay_passenger.utils.ApiHelper;
@@ -31,6 +32,8 @@ public class HomeFragment extends Fragment {
 
         // Initialize views
         recyclerView = view.findViewById(R.id.rv_recent_transactions);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         emptyStateContainer = view.findViewById(R.id.empty_state_container);
         tvCardName = view.findViewById(R.id.tv_card_name);
         tvBalance = view.findViewById(R.id.tv_balance);
@@ -112,19 +115,61 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadTransactions() {
-        // Simulate loading data (replace with your actual data loading logic)
-        // transactionsList = getTransactionsFromDatabase(); // Your actual method
+        String token = PreferenceManager.getToken(getContext());
+        String passengerId = String.valueOf(PreferenceManager.getUserId(getContext())); // make sure you saved this after login
 
-        // Check if transactions list is empty and show appropriate view
-        if (transactionsList.isEmpty()) {
-            showEmptyState();
-        } else {
-            showTransactionsList();
-            // Set up your RecyclerView adapter here
-            // TransactionAdapter adapter = new TransactionAdapter(transactionsList);
-            // recyclerView.setAdapter(adapter);
+        if (token == null || passengerId == null) {
+            Toast.makeText(getContext(), "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(getContext(), PhoneNoActivity.class));
+            if (getActivity() != null) getActivity().finish();
+            return;
         }
+
+
+        String endpoint = "/api/v1/transactions/passenger/" + passengerId;
+
+        ApiHelper.getJson(getContext(), endpoint, token, new ApiHelper.Callback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    if (response.getBoolean("success")) {
+                        List<Transaction> parsedTransactions = new ArrayList<>();
+                        for (int i = 0; i < response.getJSONArray("data").length(); i++) {
+                            JSONObject t = response.getJSONArray("data").getJSONObject(i);
+                            String name = t.optString("passengerName", "Wallet Recharge");
+                            String amount = String.format("LKR %.2f", t.optDouble("amount", 0.0));
+                            String date = t.optString("happenedAt", "").split("T")[0];
+                            String note = t.optString("note", "");
+                            parsedTransactions.add(new Transaction(name, amount, date, note));
+                        }
+
+                        if (parsedTransactions.isEmpty()) {
+                            showEmptyState();
+                        } else {
+                            showTransactionsList();
+                            TransactionAdapter adapter = new TransactionAdapter(parsedTransactions);
+                            recyclerView.setAdapter(adapter);
+                        }
+                    } else {
+                        Toast.makeText(getContext(), response.optString("message", "Failed to load transactions"), Toast.LENGTH_SHORT).show();
+                        showEmptyState();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Error parsing transaction data", Toast.LENGTH_SHORT).show();
+                    showEmptyState();
+                }
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                ApiHelper.handleVolleyError(getContext(), error, "TransactionLoad");
+                showEmptyState();
+            }
+        });
     }
+
+
+
 
     private void showEmptyState() {
         recyclerView.setVisibility(View.GONE);
