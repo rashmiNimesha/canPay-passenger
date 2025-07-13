@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/splash_blue">
 
-    <!-- Close Button -->
+    <!--Close Button -->
     <ImageButton
         android:id="@+id/btn_close"
         android:layout_width="48dp"
@@ -13,10 +13,12 @@
         android:background="@drawable/circle_white_background"
         android:src="@drawable/ic_close"
         android:contentDescription="@string/close"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
         app:tint="@color/button_blue"/>
+
 
     <!-- Card Container -->
     <LinearLayout
@@ -123,19 +125,21 @@
                 android:text="02 June 2025 - 10.30 AM"
                 android:textStyle="bold"
                 android:textSize="16sp"/>
+
+            <!-- Go Home Button -->
+            <Button
+                android:id="@+id/btn_go_home"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="GO HOME"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:background="@drawable/rounded_button"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="24dp"/>
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Go Home Button -->
-    <Button
-        android:id="@+id/btn_go_home"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="GO HOME"
-        android:textAllCaps="true"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:background="@drawable/rounded_button"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="24dp"/>
+
 </RelativeLayout>
