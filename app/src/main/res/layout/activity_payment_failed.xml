@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/screen_bg">
+
+    <!-- Logo -->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/canpay_logo" />
+
+    <!-- Centered Card Container -->
+    <LinearLayout
+        android:id="@+id/fail_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_white_bg"
+        android:padding="32dp"
+        android:layout_below="@id/logo"
+        android:layout_marginTop="48dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_centerHorizontal="true"
+        android:elevation="4dp">
+
+        <!-- Failed Icon -->
+        <ImageView
+            android:id="@+id/iv_failed_icon"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_payment_failed"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@null"/>
+
+        <!-- Payment Failed Text -->
+        <TextView
+            android:id="@+id/tv_payment_failed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Payment Failed"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#23233C"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"/>
+
+        <!-- Reason Text -->
+        <TextView
+            android:id="@+id/tv_reason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Please check your wallet balance or try again."
+            android:textSize="16sp"
+            android:textColor="#888888"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+    <!-- Go Back Button -->
+    <Button
+        android:id="@+id/btn_go_back"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="GO BACK"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_button"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="24dp"/>
+</RelativeLayout>

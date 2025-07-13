@@ -9,6 +9,8 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven { url 'https://maven.onesignal.com/repos/maven-public' }
+
     }
 }
 dependencyResolutionManagement {
@@ -16,6 +18,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://maven.onesignal.com/repos/maven-public' }
     }
 }
 

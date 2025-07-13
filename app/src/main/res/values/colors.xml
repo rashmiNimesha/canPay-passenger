@@ -6,7 +6,7 @@
     <color name="teal_200">#03DAC5</color>
     <color name="teal_700">#018786</color>
     <color name="black">#000000</color>
-    <!-- Your custom colors -->
+    <!-- custom colors -->
     <color name="splash_blue">#1566D8</color>
     <color name="gradient_blue_light">#6AD2FF</color>
     <color name="gradient_blue_corner">#50BFFF</color>
@@ -14,6 +14,10 @@
     <color name="white">#FFFFFF</color>
     <color name="text_primary">#1A2341</color>
     <color name="text_secondary">#757575</color>
+    <color name="red_700">#D32F2F</color>
+    <color name="light_red_bg">#FFEBEE</color>
+
+
 
 
 </resources>

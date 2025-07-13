@@ -3,16 +3,138 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.canpay_passenger">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Canpay_passenger"
-        tools:targetApi="31">
+        tools:targetApi="31"
+
+        >
+        <activity
+            android:name=".PinUpdateFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PinUpdateSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConfirmNewPinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CreateNewPinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CurrentPinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PhoneUpdateFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PhoneUpdateSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditOtpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditPhoneActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NameUpdateFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NameUpdateSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditNameActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BankAddFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BankAddSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddNewBankAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BankUpdateFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BankUpdateSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditBankAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BankAccountListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotificationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RechargeSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RechargeFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RechargeConfirmationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RechargeAmountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddBankAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NICEntryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PaymentFailedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PaymentSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConfirmPaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".QrScanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EnterAmountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConfirmPincodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PincodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NameActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OtpActivity"
+            android:exported="false" />
         <activity
             android:name=".PhoneNoActivity"
             android:exported="false" />
