@@ -23,9 +23,6 @@ import com.example.canpay_passenger.utils.PreferenceManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.UUID;
-
-
 public class OtpActivity extends AppCompatActivity {
 
     private EditText[] otpBoxes = new EditText[6];

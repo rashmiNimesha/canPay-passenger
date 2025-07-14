@@ -47,8 +47,8 @@ public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.
 
         public ViewHolder(View itemView) {
             super(itemView);
-         //   tvBankName = itemView.findViewById(R.id.tv_bank_account_name);
-            tvAccountName = itemView.findViewById(R.id.tv_bank_account_name);
+//            tvBankName = itemView.findViewById(R.id.tv_bank_name);
+            tvAccountName = itemView.findViewById(R.id.tv_account_holder);
 //            tvAccountNumber = itemView.findViewById(R.id.tv_account_number);
 //            tvDefaultStatus = itemView.findViewById(R.id.tv_default_status);
         }
