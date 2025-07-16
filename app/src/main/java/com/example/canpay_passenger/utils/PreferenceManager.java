@@ -13,6 +13,9 @@ import java.security.GeneralSecurityException;
 public class PreferenceManager {
     private static final String TAG = "PreferenceManager";
     private static final String PREF_NAME = "CanPayPrefs";
+    private static final String KEY_USER_NAME = "user_name";
+    private static final String KEY_EMAIL = "email";
+    private static final String KEY_NIC = "nic";
 
     private static SharedPreferences getEncryptedPrefs(Context context) {
         try {
@@ -36,12 +39,12 @@ public class PreferenceManager {
         try {
             SharedPreferences prefs = getEncryptedPrefs(context);
             SharedPreferences.Editor editor = prefs.edit();
-            if (email != null) editor.putString("email", email);
+            if (email != null) editor.putString(KEY_EMAIL, email);
             if (token != null) editor.putString("token", token);
             if (role != null) editor.putString("role", role);
-            if (userName != null) editor.putString("user_name", userName);
+            if (userName != null) editor.putString(KEY_USER_NAME, userName);
             if (userId != null) editor.putString("id", userId);
-            if (nic != null) editor.putString("nic", nic);
+            if (nic != null) editor.putString(KEY_NIC, nic);
             editor.apply();
             Log.d(TAG, "Saved user session: email=" + email + ", token=" + token + ", role=" + role);
         } catch (Exception e) {
@@ -51,7 +54,7 @@ public class PreferenceManager {
     }
 
     public static String getEmail(Context context) {
-        String email = getEncryptedPrefs(context).getString("email", null);
+        String email = getEncryptedPrefs(context).getString(KEY_EMAIL, null);
         Log.d(TAG, "Retrieved email: " + email);
         return email;
     }
@@ -69,7 +72,7 @@ public class PreferenceManager {
     }
 
     public static String getUserName(Context context) {
-        String userName = getEncryptedPrefs(context).getString("user_name", "User");
+        String userName = getEncryptedPrefs(context).getString(KEY_USER_NAME, "User");
         Log.d(TAG, "Retrieved user_name: " + userName);
         return userName;
     }
@@ -79,9 +82,35 @@ public class PreferenceManager {
     }
 
     public static String getNic(Context context) {
-        String nic = getEncryptedPrefs(context).getString("nic", null);
+        String nic = getEncryptedPrefs(context).getString(KEY_NIC, null);
         Log.d(TAG, "Retrieved nic: " + nic);
         return nic;
+    }
+
+    public static void setUserName(Context context, String userName) {
+        try {
+            SharedPreferences prefs = getEncryptedPrefs(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(KEY_USER_NAME, userName);
+            editor.apply();
+            Log.d(TAG, "Set user_name: " + userName);
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting user_name", e);
+            throw new RuntimeException("Failed to set user name", e);
+        }
+    }
+
+    public static void setEmail(Context context, String email) {
+        try {
+            SharedPreferences prefs = getEncryptedPrefs(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(KEY_EMAIL, email);
+            editor.apply();
+            Log.d(TAG, "Set email: " + email);
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting email", e);
+            throw new RuntimeException("Failed to set email", e);
+        }
     }
 
     public static void clearSession(Context context) {
@@ -92,17 +121,5 @@ public class PreferenceManager {
         } catch (Exception e) {
             Log.e(TAG, "Error clearing user session", e);
         }
-    }
-
-    public static String getString(Context context, String key, String defaultValue) {
-        SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        return prefs.getString(key, defaultValue);
-    }
-
-    public static void saveString(Context context, String key, String value) {
-        SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(key, value);
-        editor.apply();
     }
 }

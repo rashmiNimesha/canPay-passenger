@@ -3,12 +3,12 @@ package com.example.canpay_passenger;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +28,7 @@ import com.example.canpay_passenger.utils.PreferenceManager;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 public class ProfileActivity extends AppCompatActivity {
-
+    private static final String TAG = "ProfileActivity";
     private static final int CAMERA_REQUEST_CODE = 200;
     private static final int GALLERY_REQUEST_CODE = 201;
     private static final int CAMERA_PERMISSION_CODE = 202;
@@ -48,6 +49,13 @@ public class ProfileActivity extends AppCompatActivity {
         setClickListeners();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadUserData();
+        Log.d(TAG, "Refreshed user data in onResume");
+    }
+
     private void initViews() {
         ImageButton btnBack = findViewById(R.id.btn_back);
         ivProfileImage = findViewById(R.id.iv_profile_image);
@@ -65,18 +73,13 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void loadUserData() {
-//        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-//        String userName = prefs.getString("user_name", "");
-//        String userPhone = prefs.getString("email", "");
-//        String userNic = prefs.getString("nic", "");
         String userName = PreferenceManager.getUserName(this);
         String userPhone = PreferenceManager.getEmail(this);
         String userNic = PreferenceManager.getNic(this);
-
-
         tvUserName.setText(userName);
         tvUserPhone.setText(userPhone);
         tvUserNic.setText(userNic);
+        Log.d(TAG, "Loaded user data: name=" + userName + ", email=" + userPhone + ", nic=" + userNic);
     }
 
     private void setClickListeners() {
@@ -89,13 +92,13 @@ public class ProfileActivity extends AppCompatActivity {
 
         llName.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, EditNameActivity.class);
-            intent.putExtra("current_name", tvUserName.getText().toString());
+            intent.putExtra("user_name", tvUserName.getText().toString());
             startActivityForResult(intent, EDIT_NAME_REQUEST);
         });
 
         llPhone.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, EditPhoneActivity.class);
-            intent.putExtra("current_phone", tvUserPhone.getText().toString());
+            intent.putExtra("email", tvUserPhone.getText().toString());
             startActivityForResult(intent, EDIT_PHONE_REQUEST);
         });
 
@@ -139,7 +142,6 @@ public class ProfileActivity extends AppCompatActivity {
         startActivityForResult(intent, GALLERY_REQUEST_CODE);
     }
 
-    // NEW: Modern Bottom Sheet Logout Dialog
     private void showLogoutDialog() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_logout, null);
@@ -160,11 +162,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void logout() {
-//        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-//        prefs.edit().clear().apply();
-//
         PreferenceManager.clearSession(this);
-
         Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -203,20 +201,26 @@ public class ProfileActivity extends AppCompatActivity {
                     String newName = data.getStringExtra("new_name");
                     if (newName != null) {
                         tvUserName.setText(newName);
-                        SharedPreferences prefs = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-                        prefs.edit().putString("user_name", newName).apply();
+                        PreferenceManager.setUserName(this, newName);
+                        Log.d(TAG, "Updated name in ProfileActivity: " + newName);
+                    } else {
+                        Log.w(TAG, "No new name returned from EditNameActivity");
                     }
                     break;
 
                 case EDIT_PHONE_REQUEST:
-                    String newPhone = data.getStringExtra("new_phone");
+                    String newPhone = data.getStringExtra("newemail");
                     if (newPhone != null) {
                         tvUserPhone.setText(newPhone);
-                        SharedPreferences prefs2 = getSharedPreferences("CanPayPrefs", MODE_PRIVATE);
-                        prefs2.edit().putString("user_phone", newPhone).apply();
+                        PreferenceManager.setEmail(this, newPhone);
+                        Log.d(TAG, "Updated email in ProfileActivity: " + newPhone);
+                    } else {
+                        Log.w(TAG, "No new email returned from EditPhoneActivity");
                     }
                     break;
             }
+        } else {
+            Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode + ", data=" + (data == null ? "null" : "not null"));
         }
     }
 }
