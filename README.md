@@ -7,8 +7,8 @@ canPay-passenger is a component of the canPay ecosystem, designed to provide a s
 Features
 
 - Fast and secure digital payments for passengers
-- Payment through QR code scan for easy and contactless payments
-- User registration and authentication
+- Payment through QR code scan for easy and contactless payments and payments are secured
+- User registration and authentication through JWT token
 - Trip history and transaction management
 - Real-time fare calculation and payment status
 - Integration with operator and driver modules of canPay
