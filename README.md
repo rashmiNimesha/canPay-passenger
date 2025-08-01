@@ -38,9 +38,3 @@ Installation
    ```bash
    ./gradlew run
    ```
-
-Contributions are welcome! Please open issues or submit pull requests for improvements or bug fixes.
-
-## License
-
-This project is licensed under the MIT License.
