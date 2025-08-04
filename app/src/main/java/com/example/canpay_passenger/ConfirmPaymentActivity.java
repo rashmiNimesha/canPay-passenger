@@ -9,15 +9,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.VolleyError;
+
+import com.example.canpay_passenger.entity.PaymentRequest;
+import com.example.canpay_passenger.entity.PaymentResponse;
+import com.example.canpay_passenger.entity.Transaction;
 import com.example.canpay_passenger.utils.ApiHelper;
 import com.example.canpay_passenger.utils.PreferenceManager;
+import com.google.gson.Gson;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class ConfirmPaymentActivity extends AppCompatActivity {
-    String amount, conductor, busNumber, busRoute, busId, operatorId;
+    private static final String TAG = "ConfirmPaymentActivity";
+    private String amount, conductor, busNumber, busRoute, busId, operatorId;
     private Button swipeToPay;
     private TextView tvTitle, tvBusNumber, tvBusRoute;
 
@@ -31,7 +37,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         operatorId = getIntent().getStringExtra("operatorId");
         amount = getIntent().getStringExtra("amount");
 
-        // Initialize UI with placeholders to avoid null references
+        // Initialize UI
         tvTitle = findViewById(R.id.tv_confirm_title);
         tvBusNumber = findViewById(R.id.tv_bus_number);
         tvBusRoute = findViewById(R.id.tv_bus_route);
@@ -40,7 +46,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             tvBusNumber.setText("Loading...");
             tvBusRoute.setText("Loading...");
         } catch (Exception e) {
-            Log.e("ConfirmPaymentActivity", "Error initializing UI: " + e.getMessage());
+            Log.e(TAG, "Error initializing UI: " + e.getMessage());
             Toast.makeText(this, "Error initializing UI", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -52,7 +58,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         swipeToPay = findViewById(R.id.btn_swipe_to_pay);
         swipeToPay.setOnClickListener(v -> processPayment());
 
-        Log.d("ConfirmPaymentActivity", "Received: busId=" + busId + ", operatorId=" + operatorId + ", amount=" + amount);
+        Log.d(TAG, "Received: busId=" + busId + ", operatorId=" + operatorId + ", amount=" + amount);
 
         fetchBusAndOperatorDetails();
     }
@@ -60,7 +66,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
     private void fetchBusAndOperatorDetails() {
         String token = PreferenceManager.getToken(this);
         if (token == null) {
-            Log.e("ConfirmPaymentActivity", "No JWT token found");
+            Log.e(TAG, "No JWT token found");
             Toast.makeText(this, "Please log in", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, PhoneNoActivity.class));
             finish();
@@ -68,7 +74,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         }
 
         String endpoint = "/api/v1/bus/" + busId + "/operator/" + operatorId;
-        Log.d("ConfirmPaymentActivity", "Fetching details from: " + endpoint);
+        Log.d(TAG, "Fetching details from: " + endpoint);
 
         ApiHelper.getJson(this, endpoint, token, new ApiHelper.Callback() {
             @Override
@@ -84,12 +90,12 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
                         tvBusNumber.setText(busNumber);
                         tvBusRoute.setText(busRoute);
                     } else {
-                        Log.e("ConfirmPaymentActivity", "API error: " + response.getString("message"));
+                        Log.e(TAG, "API error: " + response.getString("message"));
                         Toast.makeText(ConfirmPaymentActivity.this, response.getString("message"), Toast.LENGTH_LONG).show();
                         finish();
                     }
                 } catch (Exception e) {
-                    Log.e("ConfirmPaymentActivity", "Error parsing response: " + e.getMessage());
+                    Log.e(TAG, "Error parsing response: " + e.getMessage());
                     Toast.makeText(ConfirmPaymentActivity.this, "Error parsing response", Toast.LENGTH_LONG).show();
                     finish();
                 }
@@ -98,8 +104,8 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             @Override
             public void onError(VolleyError error) {
                 String errorMessage = "Error fetching details: " + (error.networkResponse != null ? new String(error.networkResponse.data) : error.toString());
-                Log.e("ConfirmPaymentActivity", errorMessage);
-                ApiHelper.handleVolleyError(ConfirmPaymentActivity.this, error, "ConfirmPaymentActivity");
+                Log.e(TAG, errorMessage);
+                ApiHelper.handleVolleyError(ConfirmPaymentActivity.this, error, TAG);
                 finish();
             }
         });
@@ -108,52 +114,64 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
     private void processPayment() {
         String token = PreferenceManager.getToken(this);
         if (token == null) {
-            Log.e("ConfirmPaymentActivity", "No JWT token found for payment");
+            Log.e(TAG, "No JWT token found for payment");
             Toast.makeText(this, "Please log in", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, PhoneNoActivity.class));
             finish();
             return;
         }
 
-        JSONObject requestBody = new JSONObject();
+        PaymentRequest request = new PaymentRequest(busId, operatorId, amount);
+        Gson gson = new Gson();
+        String jsonBody = gson.toJson(request);
+        JSONObject requestBody;
         try {
-            requestBody.put("busId", busId);
-            requestBody.put("operatorId", operatorId);
-            requestBody.put("amount", amount);
+            requestBody = new JSONObject(jsonBody);
         } catch (Exception e) {
-            Log.e("ConfirmPaymentActivity", "Error preparing payment: " + e.getMessage());
+            Log.e(TAG, "Error preparing payment: " + e.getMessage());
             Toast.makeText(this, "Error preparing payment", Toast.LENGTH_SHORT).show();
             return;
         }
-        Log.d("ConfirmPaymentActivity", "Payment request: " + requestBody.toString());
+        Log.d(TAG, "Payment request: " + requestBody.toString());
 
         ApiHelper.postJson(this, "/api/v1/payment/process", requestBody, token, new ApiHelper.Callback() {
             @Override
             public void onSuccess(JSONObject response) {
                 try {
-                    if (response.getBoolean("success")) {
-                        JSONObject data = response.getJSONObject("data");
-                        String busNumber = data.getString("busNumber");
-                        String operatorName = data.getString("operatorName");
+                    Gson gson = new Gson();
+                    PaymentResponse paymentResponse = gson.fromJson(response.toString(), PaymentResponse.class);
+                    if (paymentResponse.isSuccess()) {
                         String dateTime = new SimpleDateFormat("dd MMMM yyyy - hh:mm a", Locale.getDefault()).format(new Date());
 
+                        // Update HomeFragment's RecyclerView
+                        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                        if (homeFragment != null && homeFragment.isVisible()) {
+                            homeFragment.addTransaction(new Transaction(
+                                    conductor,
+                                    "LKR " + amount,
+                                    dateTime.split(" - ")[0],
+                                    "Payment to " + busNumber
+                            ));
+                        }
+
+                        // Navigate to success activity
                         Intent intent = new Intent(ConfirmPaymentActivity.this, PaymentSuccessActivity.class);
                         intent.putExtra("AMOUNT", amount);
-                        intent.putExtra("CONDUCTOR", operatorName);
-                        intent.putExtra("BUS_NUMBER", busNumber);
+                        intent.putExtra("CONDUCTOR", paymentResponse.getData().getOperatorName());
+                        intent.putExtra("BUS_NUMBER", paymentResponse.getData().getBusNumber());
                         intent.putExtra("BUS_ROUTE", busRoute);
                         intent.putExtra("DATE_TIME", dateTime);
                         startActivity(intent);
                         finish();
                     } else {
-                        Log.e("ConfirmPaymentActivity", "Payment failed: " + response.getString("message"));
+                        Log.e(TAG, "Payment failed: " + paymentResponse.getMessage());
                         Intent intent = new Intent(ConfirmPaymentActivity.this, PaymentFailedActivity.class);
-                        intent.putExtra("ERROR_MESSAGE", response.getString("message"));
+                        intent.putExtra("ERROR_MESSAGE", paymentResponse.getMessage());
                         startActivity(intent);
                         finish();
                     }
                 } catch (Exception e) {
-                    Log.e("ConfirmPaymentActivity", "Error processing response: " + e.getMessage());
+                    Log.e(TAG, "Error processing response: " + e.getMessage());
                     Toast.makeText(ConfirmPaymentActivity.this, "Error processing response", Toast.LENGTH_LONG).show();
                 }
             }
@@ -161,7 +179,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             @Override
             public void onError(VolleyError error) {
                 String errorMessage = "Payment failed: " + (error.networkResponse != null ? new String(error.networkResponse.data) : error.toString());
-                Log.e("ConfirmPaymentActivity", errorMessage);
+                Log.e(TAG, errorMessage);
                 Intent intent = new Intent(ConfirmPaymentActivity.this, PaymentFailedActivity.class);
                 intent.putExtra("ERROR_MESSAGE", errorMessage);
                 startActivity(intent);

@@ -8,36 +8,47 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.VolleyError;
+import com.example.canpay_passenger.entity.Transaction;
 import com.example.canpay_passenger.utils.ApiHelper;
+import com.example.canpay_passenger.utils.Endpoints;
 import com.example.canpay_passenger.utils.PreferenceManager;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private View emptyStateContainer;
-    private List<String> transactionsList; // Replace with your actual transaction data type
+    private List<Transaction> transactionsList;
+    private TransactionAdapter adapter;
     private TextView tvCardName, tvBalance, tvCardNumber;
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Initialize views
         recyclerView = view.findViewById(R.id.rv_recent_transactions);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         emptyStateContainer = view.findViewById(R.id.empty_state_container);
         tvCardName = view.findViewById(R.id.tv_card_name);
         tvBalance = view.findViewById(R.id.tv_balance);
         tvCardNumber = view.findViewById(R.id.tv_card_number);
+
+        // Initialize transaction data
+        transactionsList = new ArrayList<>();
+        adapter = new TransactionAdapter(transactionsList);
+        recyclerView.setAdapter(adapter);
 
         // Recharge Wallet Button Listener
         Button btnRecharge = view.findViewById(R.id.btn_recharge);
@@ -46,12 +57,9 @@ public class HomeFragment extends Fragment {
             startActivity(intent);
         });
 
-        // Initialize transaction data
-        transactionsList = new ArrayList<>();
-        loadTransactions();
-
-        // Fetch wallet details from API
+        // Fetch wallet details and transactions
         fetchWalletDetails();
+        loadTransactions();
 
         return view;
     }
@@ -82,11 +90,11 @@ public class HomeFragment extends Fragment {
                     } else {
                         String message = response.optString("message", "Failed to fetch wallet balance");
                         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                        updateWalletUI(null, 0.0, "N/A"); // Fallback UI
+                        updateWalletUI(null, 0.0, "N/A");
                     }
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), "Error parsing response", Toast.LENGTH_SHORT).show();
-                    updateWalletUI(null, 0.0, "N/A"); // Fallback UI
+                    updateWalletUI(null, 0.0, "N/A");
                 }
             }
 
@@ -94,19 +102,14 @@ public class HomeFragment extends Fragment {
             public void onError(VolleyError error) {
                 ApiHelper.handleVolleyError(getContext(), error, "HomeFragment");
                 Toast.makeText(getContext(), "Failed to fetch wallet details", Toast.LENGTH_SHORT).show();
-                updateWalletUI(null, 0.0, "N/A"); // Fallback UI
+                updateWalletUI(null, 0.0, "N/A");
             }
         });
     }
 
     private void updateWalletUI(String walletNumber, double balance, String accountName) {
-        // Update cardholder name
         tvCardName.setText(accountName != null ? accountName : "N/A");
-
-        // Update balance
         tvBalance.setText(String.format("LKR %.2f", balance));
-
-        // Update card number (show last 4 digits of walletNumber or "N/A")
         if (walletNumber != null && walletNumber.length() >= 4) {
             tvCardNumber.setText("**** " + walletNumber.substring(walletNumber.length() - 4));
         } else {
@@ -114,9 +117,64 @@ public class HomeFragment extends Fragment {
         }
     }
 
+//    private void loadTransactions() {
+//        String token = PreferenceManager.getToken(getContext());
+//        String passengerId = String.valueOf(PreferenceManager.getUserId(getContext()));
+//
+//        if (token == null || passengerId == null) {
+//            Toast.makeText(getContext(), "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
+//            startActivity(new Intent(getContext(), PhoneNoActivity.class));
+//            if (getActivity() != null) getActivity().finish();
+//            return;
+//        }
+//
+//           String endpoint = "/api/v1/transactions/passenger/" + passengerId;
+//           ApiHelper.getJson(getContext(), endpoint, token, new ApiHelper.Callback() {
+//            @Override
+//            public void onSuccess(JSONObject response) {
+//                try {
+//                    if (response.getBoolean("success")) {
+//                        transactionsList.clear();
+//                        JSONArray data = response.getJSONArray("data");
+//                        for (int i = 0; i < data.length(); i++) {
+//                            JSONObject t = data.getJSONObject(i);
+//                            String name = t.optString("passengerName", "Wallet Recharge");
+//                            String amount = String.format("LKR %.2f", t.optDouble("amount", 0.0));
+//                            String date = t.optString("happenedAt", "").split("T")[0];
+//                            String note = t.optString("note", "");
+//                            transactionsList.add(new Transaction(name, amount, date, note));
+//                        }
+//
+//                        if (transactionsList.isEmpty()) {
+//                            showEmptyState();
+//                        } else {
+//                            showTransactionsList();
+//                            adapter.notifyDataSetChanged();
+//                        }
+//                    } else {
+//                        Toast.makeText(getContext(), response.optString("message", "Failed to load transactions"), Toast.LENGTH_SHORT).show();
+//                        showEmptyState();
+//                    }
+//                } catch (Exception e) {
+//                    Toast.makeText(getContext(), "Error parsing transaction data", Toast.LENGTH_SHORT).show();
+//                    showEmptyState();
+//                }
+//            }
+//
+//
+//
+//            @Override
+//            public void onError(VolleyError error) {
+//                ApiHelper.handleVolleyError(getContext(), error, "TransactionLoad");
+//                showEmptyState();
+//            }
+//        });
+//    }
+
+
     private void loadTransactions() {
         String token = PreferenceManager.getToken(getContext());
-        String passengerId = String.valueOf(PreferenceManager.getUserId(getContext())); // make sure you saved this after login
+        String passengerId = String.valueOf(PreferenceManager.getUserId(getContext()));
 
         if (token == null || passengerId == null) {
             Toast.makeText(getContext(), "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
@@ -125,30 +183,28 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-
-        String endpoint = "/api/v1/transactions/passenger/" + passengerId;
-
+        String endpoint = Endpoints.PASSENGER_TRANSACTION_HISTORY + passengerId;
         ApiHelper.getJson(getContext(), endpoint, token, new ApiHelper.Callback() {
             @Override
             public void onSuccess(JSONObject response) {
                 try {
                     if (response.getBoolean("success")) {
-                        List<Transaction> parsedTransactions = new ArrayList<>();
-                        for (int i = 0; i < response.getJSONArray("data").length(); i++) {
-                            JSONObject t = response.getJSONArray("data").getJSONObject(i);
-                            String name = t.optString("passengerName", "Wallet Recharge");
+                        transactionsList.clear();
+                        JSONArray data = response.getJSONArray("data");
+                        for (int i = 0; i < data.length(); i++) {
+                            JSONObject t = data.getJSONObject(i);
+                            String name = t.optString("operatorName", "Wallet Recharge");
                             String amount = String.format("LKR %.2f", t.optDouble("amount", 0.0));
                             String date = t.optString("happenedAt", "").split("T")[0];
                             String note = t.optString("note", "");
-                            parsedTransactions.add(new Transaction(name, amount, date, note));
+                            transactionsList.add(new Transaction(name, amount, date, note));
                         }
 
-                        if (parsedTransactions.isEmpty()) {
+                        if (transactionsList.isEmpty()) {
                             showEmptyState();
                         } else {
                             showTransactionsList();
-                            TransactionAdapter adapter = new TransactionAdapter(parsedTransactions);
-                            recyclerView.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
                         }
                     } else {
                         Toast.makeText(getContext(), response.optString("message", "Failed to load transactions"), Toast.LENGTH_SHORT).show();
@@ -168,8 +224,14 @@ public class HomeFragment extends Fragment {
         });
     }
 
-
-
+    public void addTransaction(Transaction transaction) {
+        if (transactionsList != null && adapter != null) {
+            transactionsList.add(0, transaction);
+            adapter.notifyItemInserted(0);
+            recyclerView.scrollToPosition(0);
+            showTransactionsList();
+        }
+    }
 
     private void showEmptyState() {
         recyclerView.setVisibility(View.GONE);

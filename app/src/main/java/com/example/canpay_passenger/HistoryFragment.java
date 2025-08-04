@@ -8,6 +8,9 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.canpay_passenger.entity.Transaction;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,23 +1,21 @@
 package com.example.canpay_passenger;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
-import com.example.canpay_passenger.utils.PreferenceManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.example.canpay_passenger.utils.PreferenceManager;
+import android.content.pm.PackageManager;
+import androidx.core.content.ContextCompat;
+import android.Manifest;
 
 public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";

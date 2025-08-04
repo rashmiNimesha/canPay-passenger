@@ -1,4 +1,4 @@
-package com.example.canpay_passenger; // this is for demo purpose
+package com.example.canpay_passenger.entity; // this is for demo purpose
 
 public class Transaction {
     private String name;

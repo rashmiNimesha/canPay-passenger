@@ -9,7 +9,14 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
-        maven { url 'https://maven.onesignal.com/repos/maven-public' }
+        maven {
+            url 'https://maven.onesignal.com/repos/maven-public'
+        }
+//        maven {
+//            url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
+//        }
+        maven { url 'https://jitpack.io' }
+
 
     }
 }
@@ -18,7 +25,14 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://maven.onesignal.com/repos/maven-public' }
+        maven {
+            url 'https://maven.onesignal.com/repos/maven-public'
+        }
+//        maven {
+//            url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
+//        }
+        maven { url 'https://jitpack.io' }
+
     }
 }
 

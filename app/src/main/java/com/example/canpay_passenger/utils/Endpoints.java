@@ -14,5 +14,7 @@ public class Endpoints {
     public static final String CHECK_USER = "/api/v1/auth/check-user";
     public static final String PASSENGER_WALLET_RECHARGE = "/api/v1/wallet/recharge";
 
+    public static final String PASSENGER_TRANSACTION_HISTORY= "/api/v1/transactions/recent/";
+
 
 }
