@@ -16,5 +16,8 @@ public class Endpoints {
 
     public static final String PASSENGER_TRANSACTION_HISTORY= "/api/v1/transactions/recent/";
 
+    // Add endpoints for bus/operator details and payment process
+    public static final String BUS_OPERATOR_DETAILS = "/api/v1/bus/%s/operator/%s";
+    public static final String PAYMENT_PROCESS = "/api/v1/payment/process";
 
 }

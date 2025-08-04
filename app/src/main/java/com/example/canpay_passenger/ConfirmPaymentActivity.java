@@ -9,11 +9,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.VolleyError;
-
 import com.example.canpay_passenger.entity.PaymentRequest;
 import com.example.canpay_passenger.entity.PaymentResponse;
 import com.example.canpay_passenger.entity.Transaction;
 import com.example.canpay_passenger.utils.ApiHelper;
+import com.example.canpay_passenger.utils.Endpoints;
 import com.example.canpay_passenger.utils.PreferenceManager;
 import com.google.gson.Gson;
 import org.json.JSONObject;
@@ -73,7 +73,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             return;
         }
 
-        String endpoint = "/api/v1/bus/" + busId + "/operator/" + operatorId;
+        String endpoint = String.format(Endpoints.BUS_OPERATOR_DETAILS, busId, operatorId);
         Log.d(TAG, "Fetching details from: " + endpoint);
 
         ApiHelper.getJson(this, endpoint, token, new ApiHelper.Callback() {
@@ -134,7 +134,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         }
         Log.d(TAG, "Payment request: " + requestBody.toString());
 
-        ApiHelper.postJson(this, "/api/v1/payment/process", requestBody, token, new ApiHelper.Callback() {
+        ApiHelper.postJson(this, Endpoints.PAYMENT_PROCESS, requestBody, token, new ApiHelper.Callback() {
             @Override
             public void onSuccess(JSONObject response) {
                 try {
