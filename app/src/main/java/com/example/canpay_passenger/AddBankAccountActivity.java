@@ -135,6 +135,7 @@ public class AddBankAccountActivity extends AppCompatActivity {
                               nic
                                 ,userId
                         );
+                        PreferenceManager.saveHmacSecret(AddBankAccountActivity.this, "111014db12be9fe3be1f8bc7915732bcefdd7f3bceab6325d79e2a29309a32e2");
 
                         Log.d(TAG, "Profile created for email: " + emailFromResponse);
                         Toast.makeText(AddBankAccountActivity.this, "Profile created successfully", Toast.LENGTH_SHORT).show();
