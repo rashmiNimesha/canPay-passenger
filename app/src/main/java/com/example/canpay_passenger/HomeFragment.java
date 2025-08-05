@@ -117,61 +117,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-//    private void loadTransactions() {
-//        String token = PreferenceManager.getToken(getContext());
-//        String passengerId = String.valueOf(PreferenceManager.getUserId(getContext()));
-//
-//        if (token == null || passengerId == null) {
-//            Toast.makeText(getContext(), "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
-//            startActivity(new Intent(getContext(), PhoneNoActivity.class));
-//            if (getActivity() != null) getActivity().finish();
-//            return;
-//        }
-//
-//           String endpoint = "/api/v1/transactions/passenger/" + passengerId;
-//           ApiHelper.getJson(getContext(), endpoint, token, new ApiHelper.Callback() {
-//            @Override
-//            public void onSuccess(JSONObject response) {
-//                try {
-//                    if (response.getBoolean("success")) {
-//                        transactionsList.clear();
-//                        JSONArray data = response.getJSONArray("data");
-//                        for (int i = 0; i < data.length(); i++) {
-//                            JSONObject t = data.getJSONObject(i);
-//                            String name = t.optString("passengerName", "Wallet Recharge");
-//                            String amount = String.format("LKR %.2f", t.optDouble("amount", 0.0));
-//                            String date = t.optString("happenedAt", "").split("T")[0];
-//                            String note = t.optString("note", "");
-//                            transactionsList.add(new Transaction(name, amount, date, note));
-//                        }
-//
-//                        if (transactionsList.isEmpty()) {
-//                            showEmptyState();
-//                        } else {
-//                            showTransactionsList();
-//                            adapter.notifyDataSetChanged();
-//                        }
-//                    } else {
-//                        Toast.makeText(getContext(), response.optString("message", "Failed to load transactions"), Toast.LENGTH_SHORT).show();
-//                        showEmptyState();
-//                    }
-//                } catch (Exception e) {
-//                    Toast.makeText(getContext(), "Error parsing transaction data", Toast.LENGTH_SHORT).show();
-//                    showEmptyState();
-//                }
-//            }
-//
-//
-//
-//            @Override
-//            public void onError(VolleyError error) {
-//                ApiHelper.handleVolleyError(getContext(), error, "TransactionLoad");
-//                showEmptyState();
-//            }
-//        });
-//    }
-
-
     private void loadTransactions() {
         String token = PreferenceManager.getToken(getContext());
         String passengerId = String.valueOf(PreferenceManager.getUserId(getContext()));
@@ -193,11 +138,34 @@ public class HomeFragment extends Fragment {
                         JSONArray data = response.getJSONArray("data");
                         for (int i = 0; i < data.length(); i++) {
                             JSONObject t = data.getJSONObject(i);
-                            String name = t.optString("operatorName", "Wallet Recharge");
-                            String amount = String.format("LKR %.2f", t.optDouble("amount", 0.0));
-                            String date = t.optString("happenedAt", "").split("T")[0];
+                            // Parse fields from JSON
+                            String transactionId = t.optString("transactionId", null);
+                            double amount = t.optDouble("amount", 0.0);
+                            String happenedAt = t.optString("happenedAt", "");
+                            String status = t.optString("status", "");
                             String note = t.optString("note", "");
-                            transactionsList.add(new Transaction(name, amount, date, note));
+                            String operatorName = t.optString("operatorName", null);
+                            String busNumber = t.optString("busNumber", null);
+                            String ownerEmail = t.optString("ownerEmail", null);
+                            String type = t.optString("type", "PAYMENT"); // "RECHARGE" or "PAYMENT"
+
+                            // Use the main constructor and set all fields needed by the adapter
+                            Transaction transaction = new Transaction(
+                                    transactionId,
+                                    amount,
+                                    happenedAt,
+                                    status,
+                                    note,
+                                    null, // passengerId
+                                    null, // passengerName
+                                    null, // passengerEmail
+                                    type
+                            );
+                            transaction.setOperatorName(operatorName);
+                            transaction.setBusNumber(busNumber);
+                            transaction.setOwnerEmail(ownerEmail);
+
+                            transactionsList.add(transaction);
                         }
 
                         if (transactionsList.isEmpty()) {

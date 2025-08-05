@@ -20,4 +20,6 @@ public class Endpoints {
     public static final String BUS_OPERATOR_DETAILS = "/api/v1/bus/%s/operator/%s";
     public static final String PAYMENT_PROCESS = "/api/v1/payment/process";
 
+    public static final String PAYMENT_HISTORY = "/api/v1/transactions/passenger/%s/all-recent";
+
 }
