@@ -1,15 +1,10 @@
 package com.example.canpay_passenger;
 
 public class BankAccount {
-//    private String name;
-
     private String bank;
     private String accountName;
     private boolean isDefault = false;
     private long accountNumber;
-//    public BankAccount(String name) { this.name = name; }
-//    public String getName() { return name; }
-
 
     public BankAccount(String bank, String accountName) {
         this.bank = bank;
