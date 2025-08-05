@@ -75,7 +75,8 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        ApiHelper.getJson(getContext(), "/api/v1/wallet/balance", token, new ApiHelper.Callback() {
+        String endpoint = Endpoints.WALLET_BALANCE;
+        ApiHelper.getJson(getContext(), endpoint, token, new ApiHelper.Callback() {
             @Override
             public void onSuccess(JSONObject response) {
                 try {

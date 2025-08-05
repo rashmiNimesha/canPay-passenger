@@ -22,4 +22,6 @@ public class Endpoints {
 
     public static final String PAYMENT_HISTORY = "/api/v1/transactions/passenger/%s/all-recent";
 
+    public static final String WALLET_BALANCE = "/api/v1/wallet/balance";
+
 }
