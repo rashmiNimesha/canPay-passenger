@@ -95,12 +95,12 @@ public class BankAccountListActivity extends AppCompatActivity implements BankAc
         try {
             for (int i = 0; i < response.length(); i++) {
                 JSONObject obj = response.getJSONObject(i);
-//                String bankName = obj.getString("bankName");
+                String bankName = obj.getString("bankName");
 //                long accountNumber = obj.getLong("accountNumber");
                 String accountName = obj.getString("accountName");
              //   boolean isDefault = obj.getBoolean("default");
 
-                bankAccounts.add(new BankAccount( accountName));
+                bankAccounts.add(new BankAccount(bankName, accountName));
             }
             adapter.notifyDataSetChanged();
             if (bankAccounts.isEmpty()) {

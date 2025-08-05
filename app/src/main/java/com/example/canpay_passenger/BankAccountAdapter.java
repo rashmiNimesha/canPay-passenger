@@ -30,7 +30,7 @@ public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         BankAccount account = bankAccounts.get(position);
-//        holder.tvBankName.setText(account.getBank());
+        holder.tvBankName.setText(account.getBank());
         holder.tvAccountName.setText(account.getAccountName());
 //        holder.tvAccountNumber.setText(String.valueOf(account.getAccountNumber()));
 //        holder.tvDefaultStatus.setText(account.isDefault() ? "Default" : "");
@@ -47,7 +47,7 @@ public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.
 
         public ViewHolder(View itemView) {
             super(itemView);
-//            tvBankName = itemView.findViewById(R.id.tv_bank_name);
+            tvBankName = itemView.findViewById(R.id.tv_bank_name);
             tvAccountName = itemView.findViewById(R.id.tv_account_holder);
 //            tvAccountNumber = itemView.findViewById(R.id.tv_account_number);
 //            tvDefaultStatus = itemView.findViewById(R.id.tv_default_status);
