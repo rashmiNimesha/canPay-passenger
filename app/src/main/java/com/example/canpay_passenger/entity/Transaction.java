@@ -4,9 +4,12 @@ public class Transaction {
     private String name;
     private String amount;
     private String date;
+    private String time;
+
     private int iconResId; // for the arrow icon (optional)
     public String note;
 
+    private String transactionType;
 
     public Transaction(String name, String amount, String date, int iconResId) {
         this.name = name;
@@ -19,6 +22,15 @@ public class Transaction {
         this.name = name;
         this.amount = amount;
         this.date = date;
+        this.note = note;
+    }
+
+    public Transaction(String name, String amount, String date, String time, String transactionType, String note) {
+        this.name = name;
+        this.amount = amount;
+        this.date = date;
+        this.time = time;
+        this.transactionType = transactionType;
         this.note = note;
     }
 
@@ -38,5 +50,33 @@ public class Transaction {
     public String getAmount() { return amount; }
     public String getDate() { return date; }
     public int getIconResId() { return iconResId; }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public void setIconResId(int iconResId) {
+        this.iconResId = iconResId;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
+    }
 }
 

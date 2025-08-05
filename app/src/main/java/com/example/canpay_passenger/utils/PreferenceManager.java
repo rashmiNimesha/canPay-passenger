@@ -16,6 +16,7 @@ public class PreferenceManager {
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_NIC = "nic";
+    private static final String KEY_HMAC_SECRET = "hmac_secret";
 
     private static SharedPreferences getEncryptedPrefs(Context context) {
         try {
@@ -53,6 +54,14 @@ public class PreferenceManager {
         }
     }
 
+    public static void saveHmacSecret(Context context, String hmacSecret) {
+        SharedPreferences prefs = getEncryptedPrefs(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_HMAC_SECRET, hmacSecret);
+        editor.apply();
+        Log.d(TAG, "Saved HMAC secret");
+    }
+
     public static String getEmail(Context context) {
         String email = getEncryptedPrefs(context).getString(KEY_EMAIL, null);
         Log.d(TAG, "Retrieved email: " + email);
@@ -85,6 +94,12 @@ public class PreferenceManager {
         String nic = getEncryptedPrefs(context).getString(KEY_NIC, null);
         Log.d(TAG, "Retrieved nic: " + nic);
         return nic;
+    }
+
+    public static String getHmacSecret(Context context) {
+        String secret = getEncryptedPrefs(context).getString(KEY_HMAC_SECRET, null);
+        Log.d(TAG, "Retrieved HMAC secret: " + (secret != null ? "***" : "null"));
+        return secret;
     }
 
     public static void setUserName(Context context, String userName) {

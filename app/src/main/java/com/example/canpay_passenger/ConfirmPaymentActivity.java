@@ -15,11 +15,17 @@ import com.example.canpay_passenger.entity.Transaction;
 import com.example.canpay_passenger.utils.ApiHelper;
 import com.example.canpay_passenger.utils.Endpoints;
 import com.example.canpay_passenger.utils.PreferenceManager;
+import com.example.canpay_passenger.utils.HmacUtils;
 import com.google.gson.Gson;
 import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public class ConfirmPaymentActivity extends AppCompatActivity {
     private static final String TAG = "ConfirmPaymentActivity";
@@ -134,7 +140,46 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         }
         Log.d(TAG, "Payment request: " + requestBody.toString());
 
-        ApiHelper.postJson(this, Endpoints.PAYMENT_PROCESS, requestBody, token, new ApiHelper.Callback() {
+        // --- HMAC signing ---
+        String hmacSecret = PreferenceManager.getHmacSecret(this);
+        if (hmacSecret == null) {
+            Toast.makeText(this, "Device HMAC key missing. Please re-login.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        // Format amount to match Postman (no decimal for whole numbers)
+        String formattedAmount = new java.math.BigDecimal(amount).stripTrailingZeros().toPlainString();
+        String payloadToSign = formattedAmount + ":" + timestamp;
+        String signature = HmacUtils.hmacSha256(hmacSecret, payloadToSign);
+        if (signature == null) {
+            Log.e(TAG, "Failed to generate HMAC signature");
+            Toast.makeText(this, "Error generating signature", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Log for debugging
+        Log.d(TAG, "HMAC Payload: " + payloadToSign);
+        Log.d(TAG, "HMAC Signature: " + signature);
+        Log.d(TAG, "Timestamp: " + timestamp);
+
+        // Compute raw HMAC bytes for debugging
+        try {
+            Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secret_key = new SecretKeySpec(hmacSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            sha256_HMAC.init(secret_key);
+            byte[] hash = sha256_HMAC.doFinal(payloadToSign.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            Log.d(TAG, "Raw HMAC Bytes (Hex): " + hexString.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "Error computing raw HMAC for debugging: " + e.getMessage());
+        }
+
+        ApiHelper.postJsonWithHeaders(this, Endpoints.PAYMENT_PROCESS, requestBody, token, signature, timestamp, new ApiHelper.Callback() {
             @Override
             public void onSuccess(JSONObject response) {
                 try {
@@ -178,8 +223,14 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-                String errorMessage = "Payment failed: " + (error.networkResponse != null ? new String(error.networkResponse.data) : error.toString());
-                Log.e(TAG, errorMessage);
+                String errorMessage = "Payment failed: ";
+                if (error.networkResponse != null && error.networkResponse.data != null) {
+                    errorMessage += new String(error.networkResponse.data);
+                    Log.e(TAG, "HTTP Status Code: " + error.networkResponse.statusCode);
+                } else {
+                    errorMessage += error.toString();
+                }
+                Log.e(TAG, errorMessage, error);
                 Intent intent = new Intent(ConfirmPaymentActivity.this, PaymentFailedActivity.class);
                 intent.putExtra("ERROR_MESSAGE", errorMessage);
                 startActivity(intent);

@@ -136,6 +136,8 @@ public class OtpActivity extends AppCompatActivity {
 
                     // Save token and role to EncryptedSharedPreferences
                     PreferenceManager.saveUserSession(OtpActivity.this, userEmail, token, userRole, userName, nic, userId);
+                    PreferenceManager.saveHmacSecret(OtpActivity.this, "111014db12be9fe3be1f8bc7915732bcefdd7f3bceab6325d79e2a29309a32e2"); // Use the same secret as backend
+
                     Log.d(TAG, "Saved session for email: " + userEmail);
 
                     if (isNewUser) {
