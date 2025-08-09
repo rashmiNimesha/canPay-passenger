@@ -5,10 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 
 public class NameActivity extends AppCompatActivity {
     @Override
@@ -35,6 +32,25 @@ public class NameActivity extends AppCompatActivity {
 
             if (name.isEmpty()) {
                 etName.setError("Please enter your name");
+                etName.requestFocus();
+                return;
+            }
+
+            if (name.length() < 3) {
+                etName.setError("Name must be at least 3 letters");
+                etName.requestFocus();
+                return;
+            }
+
+            if (!name.matches("^[a-zA-Z]+$")) {
+                etName.setError("Name must contain letters only");
+                etName.requestFocus();
+                return;
+            }
+
+            if (name.length() > 50) {
+                etName.setError("Name cannot exceed 50 characters");
+                etName.requestFocus();
                 return;
             }
 

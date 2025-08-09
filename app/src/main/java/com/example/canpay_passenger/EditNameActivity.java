@@ -63,8 +63,15 @@ public class EditNameActivity extends AppCompatActivity {
             showError("Name must be at least 2 characters");
             return;
         }
-        if (!name.matches("^[a-zA-Z .'-]+$")) {
-            showError("Name contains invalid characters");
+        if (name.length() > 50) {
+            showError("Name cannot exceed 50 characters");
+            return;
+        }
+        // Regex explanation:
+        // Allowed: letters (a-zA-Z), spaces, periods, apostrophes, hyphens
+        // No consecutive spaces or special characters sequences
+        if (!name.matches("^[a-zA-Z]+([ '.-]?[a-zA-Z]+)*$")) {
+            showError("Name contains invalid characters or sequences");
             return;
         }
 
@@ -119,7 +126,8 @@ public class EditNameActivity extends AppCompatActivity {
                         String message = response.optString("message", "Failed to update name");
                         Log.e(TAG, "Server returned success=false: " + message);
                         Intent intent = new Intent(EditNameActivity.this, NameUpdateFailedActivity.class);
-                        startActivity(intent);                    }
+                        startActivity(intent);
+                    }
                 } catch (JSONException e) {
                     Log.e(TAG, "Error parsing response", e);
                     Toast.makeText(EditNameActivity.this, "Invalid server response", Toast.LENGTH_SHORT).show();
