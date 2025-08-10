@@ -24,6 +24,7 @@ public class HiveMqttManager {
     private Consumer<String> pendingSubscription = null;
 
     public HiveMqttManager(String passengerId) {
+        Log.d("MQTT", "Initializing HiveMqttManager for passengerId: " + passengerId);
         this.topic = "passenger/" + passengerId + "/payment";
         client = MqttClient.builder()
                 .useMqttVersion3()

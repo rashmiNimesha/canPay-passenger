@@ -17,5 +17,6 @@ public class NotificationItem {
         this.title = title;
         this.date = date;
         this.isUnread = isUnread;
+        this.iconResId = R.drawable.ic_arrow_down; // Default icon, change as needed
     }
 }

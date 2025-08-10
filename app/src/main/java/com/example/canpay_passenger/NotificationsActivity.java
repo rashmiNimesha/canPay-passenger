@@ -46,9 +46,11 @@ public class NotificationsActivity extends AppCompatActivity {
             recyclerView.setAdapter(adapter);
         }
 
+        Log.d("NotificationsActivity", "Notifications loaded: " + notifications.size());
         // Example: get passengerId from shared preferences or intent
         String passengerId = getSharedPreferences("user", MODE_PRIVATE).getString("passengerId", null);
         if (passengerId != null) {
+            Log.d("NotificationsActivity", "Connecting to MQTT for passengerId: " + passengerId);
             mqttManager = new HiveMqttManager(passengerId);
             mqttManager.connect(() -> {
                 mqttManager.subscribe(this::onPaymentNotificationReceived);
@@ -57,6 +59,7 @@ public class NotificationsActivity extends AppCompatActivity {
     }
 
     private void onPaymentNotificationReceived(String payload) {
+        Log.d("MQTT", "Payment notification received: " + payload);
         try {
             JSONObject json = new JSONObject(payload);
             String busNumber = json.optString("busNumber", "Bus");
@@ -66,7 +69,9 @@ public class NotificationsActivity extends AppCompatActivity {
             String date = android.text.format.DateFormat.format("MMM dd, yyyy HH:mm", System.currentTimeMillis()).toString();
 
             String title = "Payment to " + busNumber + " successful: " + amount + " (" + status + ")";
-            NotificationItem item = new NotificationItem(title, date, true);
+            // Always provide iconResId (use your payment icon, e.g. R.drawable.ic_arrow_down)
+            int iconResId = R.drawable.ic_arrow_down; // Change to your payment icon if needed
+            NotificationItem item = new NotificationItem(title, date, iconResId, true);
 
             runOnUiThread(() -> {
                 notifications.add(0, item);
@@ -78,6 +83,7 @@ public class NotificationsActivity extends AppCompatActivity {
                 }
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyState.setVisibility(View.GONE);
+                recyclerView.scrollToPosition(0); // Scroll to top for new notification
             });
         } catch (Exception e) {
             Log.e("MQTT", "Failed to parse payment notification", e);
