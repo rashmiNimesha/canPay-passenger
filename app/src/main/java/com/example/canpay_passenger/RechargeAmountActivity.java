@@ -1,7 +1,6 @@
 package com.example.canpay_passenger;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,11 +10,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.canpay_passenger.config.ApiConfig;
 import com.example.canpay_passenger.request.VolleySingleton;
 import com.example.canpay_passenger.utils.ApiHelper;
@@ -38,7 +37,8 @@ public class RechargeAmountActivity extends AppCompatActivity {
     private EditText etAmount;
     private Button btnNext;
     private ImageButton btnBack;
-    private  String userEmail, token;
+    private String userEmail, token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +56,6 @@ public class RechargeAmountActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Missing token", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private void initViews() {
@@ -114,7 +113,6 @@ public class RechargeAmountActivity extends AppCompatActivity {
         return accounts;
     }
 
-
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
 
@@ -127,28 +125,45 @@ public class RechargeAmountActivity extends AppCompatActivity {
 
     private boolean validateInputs() {
         String selectedAccount = spinnerBankAccount.getSelectedItem().toString();
-        String amount = etAmount.getText().toString().trim();
+        String amountStr = etAmount.getText().toString().trim();
 
+        // Validate bank account selection
         if (selectedAccount.equals("Select bank account")) {
             Toast.makeText(this, "Please select a bank account", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if (TextUtils.isEmpty(amount)) {
+        // Validate amount not empty
+        if (TextUtils.isEmpty(amountStr)) {
             etAmount.setError("Enter amount");
             etAmount.requestFocus();
             return false;
         }
 
+        // Validate numeric format (only digits and optional decimal point)
+        if (!amountStr.matches("^\\d+(\\.\\d{1,2})?$")) {
+            etAmount.setError("Enter a valid amount (max 2 decimal places)");
+            etAmount.requestFocus();
+            return false;
+        }
+
         try {
-            double amt = Double.parseDouble(amount);
+            double amt = Double.parseDouble(amountStr);
+
+            // Validate positive and within limits (example: 1 to 100000)
             if (amt <= 0) {
-                etAmount.setError("Enter a valid amount");
+                etAmount.setError("Amount must be greater than 0");
                 etAmount.requestFocus();
                 return false;
             }
+            if (amt > 100000) {
+                etAmount.setError("Amount exceeds maximum limit");
+                etAmount.requestFocus();
+                return false;
+            }
+
         } catch (NumberFormatException e) {
-            etAmount.setError("Enter a valid amount");
+            etAmount.setError("Enter a valid number");
             etAmount.requestFocus();
             return false;
         }
@@ -160,7 +175,6 @@ public class RechargeAmountActivity extends AppCompatActivity {
         String selectedAccount = spinnerBankAccount.getSelectedItem().toString();
         String amount = etAmount.getText().toString().trim();
 
-        // TODO: Implement payment confirmation screen or direct payment processing
         Intent intent = new Intent(this, RechargeConfirmationActivity.class);
         intent.putExtra("BANK_ACCOUNT", selectedAccount);
         intent.putExtra("AMOUNT", amount);

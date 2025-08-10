@@ -1,4 +1,4 @@
- package com.example.canpay_passenger;
+package com.example.canpay_passenger;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.VolleyError;
 import com.example.canpay_passenger.utils.ApiHelper;
 import com.example.canpay_passenger.utils.Endpoints;
@@ -32,6 +33,35 @@ public class RechargeConfirmationActivity extends AppCompatActivity {
         String bankAccount = getIntent().getStringExtra("BANK_ACCOUNT");
         String dateTime = getIntent().getStringExtra("DATE_TIME");
 
+        // Validate incoming intent data
+        if (amount == null || bankAccount == null || dateTime == null) {
+            Toast.makeText(this, "Missing recharge details", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Amount validation
+        double amountValue;
+        try {
+            amountValue = Double.parseDouble(amount);
+            if (amountValue <= 0) {
+                Toast.makeText(this, "Invalid recharge amount", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Amount must be a valid number", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Bank account validation
+        if (bankAccount.trim().isEmpty() || bankAccount.equalsIgnoreCase("Select bank account")) {
+            Toast.makeText(this, "Invalid bank account selected", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         TextView tvTitle = findViewById(R.id.tv_recharge_title);
         tvTitle.setText("Add " + amount + " LKR to your wallet?");
         ((TextView) findViewById(R.id.tv_from)).setText(bankAccount);
@@ -48,8 +78,13 @@ public class RechargeConfirmationActivity extends AppCompatActivity {
             String email = PreferenceManager.getEmail(this);
             String token = PreferenceManager.getToken(this);
 
-            if (email == null || amountFinal == null || token == null) {
-                Toast.makeText(this, "Missing required info", Toast.LENGTH_SHORT).show();
+            // Validate email & token before API call
+            if (email == null || email.trim().isEmpty()) {
+                Toast.makeText(this, "User email not found. Please login again.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (token == null || token.trim().isEmpty()) {
+                Toast.makeText(this, "User authentication token missing. Please login again.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -59,7 +94,7 @@ public class RechargeConfirmationActivity extends AppCompatActivity {
                 body.put("amount", amountFinal);
             } catch (JSONException e) {
                 Log.e(TAG, "Error building request", e);
-                Toast.makeText(this, "Error building request", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Error preparing request", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -80,7 +115,6 @@ public class RechargeConfirmationActivity extends AppCompatActivity {
                                     ", new balance=" + balance + ", walletNumber=" + walletNumber +
                                     ", accountName=" + accountName);
 
-                            // Navigate to success activity
                             Intent intent = new Intent(RechargeConfirmationActivity.this, RechargeSuccessActivity.class);
                             intent.putExtra("AMOUNT", amountFinal);
                             intent.putExtra("BANK_ACCOUNT", bankAccountFinal);

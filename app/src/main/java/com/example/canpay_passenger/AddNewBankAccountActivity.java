@@ -53,13 +53,30 @@ public class AddNewBankAccountActivity extends AppCompatActivity {
             String accountNumberStr = etAccountNumber.getText().toString().trim();
             String accountName = etAccountName.getText().toString().trim();
 
-            // Validation
+            // Bank validation
             if (bank.equals("Select bank")) {
                 Toast.makeText(this, "Please select a bank", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            // Account number validations
             if (TextUtils.isEmpty(accountNumberStr)) {
                 etAccountNumber.setError("Enter account number");
+                etAccountNumber.requestFocus();
+                return;
+            }
+            if (!accountNumberStr.matches("\\d+")) {
+                etAccountNumber.setError("Account number must contain digits only");
+                etAccountNumber.requestFocus();
+                return;
+            }
+            if (accountNumberStr.length() > 15) {
+                etAccountNumber.setError("Account number must be at most 15 digits");
+                etAccountNumber.requestFocus();
+                return;
+            }
+            if (accountNumberStr.startsWith("0")) {
+                etAccountNumber.setError("Account number cannot start with zero");
                 etAccountNumber.requestFocus();
                 return;
             }
@@ -76,8 +93,20 @@ public class AddNewBankAccountActivity extends AppCompatActivity {
                 etAccountNumber.requestFocus();
                 return;
             }
+
+            // Account name validations
             if (TextUtils.isEmpty(accountName)) {
                 etAccountName.setError("Enter account name");
+                etAccountName.requestFocus();
+                return;
+            }
+            if (!accountName.matches("[a-zA-Z ]+")) {
+                etAccountName.setError("Account name must contain letters and spaces only");
+                etAccountName.requestFocus();
+                return;
+            }
+            if (accountName.length() > 50) {
+                etAccountName.setError("Account name must be at most 50 characters");
                 etAccountName.requestFocus();
                 return;
             }

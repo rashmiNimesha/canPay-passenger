@@ -199,7 +199,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_phone"
+                android:src="@drawable/ic_email"
                 android:layout_marginEnd="12dp"
                 android:contentDescription="@null"/>
 
@@ -212,7 +212,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your phone"
+                    android:text="Your email address"
                     android:textSize="13sp"
                     android:textColor="#888888"/>
 
@@ -220,7 +220,7 @@
                     android:id="@+id/tv_user_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+94 71 12 12 123"
+                    android:text="test@gmail.com"
                     android:textSize="15sp"
                     android:textColor="#23233C"
                     android:layout_marginTop="2dp"/>

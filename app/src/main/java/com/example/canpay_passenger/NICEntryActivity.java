@@ -19,13 +19,21 @@ public class NICEntryActivity extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.btn_back);
 
         btnBack.setOnClickListener(v -> finish());
+
         String name = getIntent().getStringExtra("name");
         String email = getIntent().getStringExtra("email");
 
         btnNext.setOnClickListener(v -> {
             String nic = etNic.getText().toString().trim();
+
             if (TextUtils.isEmpty(nic)) {
                 etNic.setError("Please enter your NIC number");
+                etNic.requestFocus();
+                return;
+            }
+
+            if (!isValidNIC(nic)) {
+                etNic.setError("Invalid NIC format. Use 12 digits or 9 digits + 'V'/'v'");
                 etNic.requestFocus();
                 return;
             }
@@ -37,5 +45,17 @@ public class NICEntryActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+    }
+
+    private boolean isValidNIC(String nic) {
+        // Check for 12 digits
+        if (nic.matches("^\\d{12}$")) {
+            return true;
+        }
+        // Check for 9 digits followed by 'V' or 'v'
+        if (nic.matches("^\\d{9}[Vv]$")) {
+            return true;
+        }
+        return false;
     }
 }

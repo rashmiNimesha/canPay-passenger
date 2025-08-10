@@ -70,14 +70,15 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:hint="Enter your phone number"
-        android:inputType="text"
-        android:drawableEnd="@drawable/ic_phone"
+        android:inputType="phone"
+        android:drawableEnd="@drawable/ic_email"
         android:drawablePadding="5dp"
         android:background="@drawable/edittext_outline"
         android:padding="16dp"
         android:textColor="@color/text_primary"
         android:textSize="16sp"
         android:layout_marginTop="3dp"/>
+
 
     <!-- Error Message -->
     <TextView

@@ -26,28 +26,42 @@ public class EnterAmountActivity extends AppCompatActivity {
         Button nextButton = findViewById(R.id.btn_next);
 
         nextButton.setOnClickListener(v -> {
-            String amount = amountEdit.getText().toString().trim();
+            String amount = amountEdit.getText() != null ? amountEdit.getText().toString().trim() : "";
 
-            // Validate amount
+            // Validate amount: not empty
             if (TextUtils.isEmpty(amount)) {
                 amountEdit.setError("Please enter an amount");
                 amountEdit.requestFocus();
                 return;
             }
+
+            // Validate amount: must be a valid positive number
+            double value;
             try {
-                double value = Double.parseDouble(amount);
-                if (value <= 0) {
-                    amountEdit.setError("Enter a valid amount");
-                    amountEdit.requestFocus();
-                    return;
-                }
+                value = Double.parseDouble(amount);
             } catch (NumberFormatException e) {
-                amountEdit.setError("Enter a valid amount");
+                amountEdit.setError("Enter a valid numeric amount");
                 amountEdit.requestFocus();
                 return;
             }
 
-            // Navigate to ConfirmPaymentActivity
+            if (value <= 0) {
+                amountEdit.setError("Enter an amount greater than zero");
+                amountEdit.requestFocus();
+                return;
+            }
+
+            // Optional: Limit decimal places to 2 (if desired)
+            if (amount.contains(".")) {
+                int decimalPlaces = amount.length() - amount.indexOf('.') - 1;
+                if (decimalPlaces > 2) {
+                    amountEdit.setError("Amount can have up to 2 decimal places");
+                    amountEdit.requestFocus();
+                    return;
+                }
+            }
+
+            // All validations passed, proceed to next activity
             Intent intent = new Intent(EnterAmountActivity.this, ConfirmPaymentActivity.class);
             intent.putExtra("busId", busId);
             intent.putExtra("operatorId", operatorId);

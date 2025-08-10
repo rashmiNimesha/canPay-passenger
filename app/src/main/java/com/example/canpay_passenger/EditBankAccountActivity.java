@@ -16,9 +16,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 public class EditBankAccountActivity extends AppCompatActivity {
 
-    // meka edit bank acc eka.  ara patch ekenma ewnn but chnage logic
-
-
     private Spinner spinnerBank;
     private EditText etAccountNumber, etAccountName;
 
@@ -60,13 +57,40 @@ public class EditBankAccountActivity extends AppCompatActivity {
                 Toast.makeText(this, "Please select a bank", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             if (TextUtils.isEmpty(accountNumber)) {
                 etAccountNumber.setError("Enter account number");
                 etAccountNumber.requestFocus();
                 return;
             }
+            if (!accountNumber.matches("\\d+")) {
+                etAccountNumber.setError("Account number must contain only digits");
+                etAccountNumber.requestFocus();
+                return;
+            }
+            if (accountNumber.length() > 15) {
+                etAccountNumber.setError("Account number cannot exceed 15 digits");
+                etAccountNumber.requestFocus();
+                return;
+            }
+            if (accountNumber.startsWith("0")) {
+                etAccountNumber.setError("Account number cannot start with zero");
+                etAccountNumber.requestFocus();
+                return;
+            }
+
             if (TextUtils.isEmpty(accountName)) {
                 etAccountName.setError("Enter account name");
+                etAccountName.requestFocus();
+                return;
+            }
+            if (!accountName.matches("[a-zA-Z ]+")) {
+                etAccountName.setError("Account name can only contain letters and spaces");
+                etAccountName.requestFocus();
+                return;
+            }
+            if (accountName.length() > 50) {
+                etAccountName.setError("Account name cannot exceed 50 characters");
                 etAccountName.requestFocus();
                 return;
             }
@@ -86,7 +110,7 @@ public class EditBankAccountActivity extends AppCompatActivity {
         });
     }
 
-    // NEW: Modern Bottom Sheet for Remove Account Confirmation
+    // Modern Bottom Sheet for Remove Account Confirmation
     private void showRemoveAccountDialog() {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_remove_bank_account, null);

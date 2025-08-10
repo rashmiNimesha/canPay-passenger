@@ -61,14 +61,17 @@
     <!-- Centered Floating QR Scan Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_qr_scan"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        app:layout_anchor="@id/bottom_nav"
-        app:layout_anchorGravity="center"
-        android:layout_marginBottom="20dp"
-        android:elevation="6dp"
-        android:src="@drawable/ic_qr_scan"
-        app:backgroundTint="@color/button_blue"
-        app:tint="@color/white" />
+        android:layout_width="58dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:contentDescription="Scan QR code"
+        android:layout_marginBottom="70dp"
+        android:elevation="8dp"
+        android:src="@drawable/ic_qr_scan" />
+<!--        app:backgroundTint="@color/button_blue"-->
+<!--        app:tint="@color/white" />-->
+
+
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

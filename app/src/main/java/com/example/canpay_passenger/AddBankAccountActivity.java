@@ -14,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.VolleyError;
 import com.example.canpay_passenger.utils.ApiHelper;
 import com.example.canpay_passenger.utils.Endpoints;
@@ -21,7 +22,6 @@ import com.example.canpay_passenger.utils.PreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 public class AddBankAccountActivity extends AppCompatActivity {
     @Override
@@ -57,21 +57,50 @@ public class AddBankAccountActivity extends AppCompatActivity {
             String accountNumber = etAccountNumber.getText().toString().trim();
             String accountName = etAccountName.getText().toString().trim();
 
+            // Bank validation
             if (bank.equals("Select bank")) {
                 Toast.makeText(this, "Please select a bank", Toast.LENGTH_SHORT).show();
-                btnNext.setEnabled(true); // re-enable on validation fail
+                btnNext.setEnabled(true);
                 return;
             }
+
+            // Account number validation
             if (TextUtils.isEmpty(accountNumber)) {
                 etAccountNumber.setError("Enter account number");
                 etAccountNumber.requestFocus();
-                btnNext.setEnabled(true); // re-enable on validation fail
+                btnNext.setEnabled(true);
                 return;
             }
+            if (!accountNumber.matches("\\d+")) {  // digits only
+                etAccountNumber.setError("Account number must contain digits only");
+                etAccountNumber.requestFocus();
+                btnNext.setEnabled(true);
+                return;
+            }
+            if (accountNumber.length() > 15) {
+                etAccountNumber.setError("Account number must be at most 15 digits");
+                etAccountNumber.requestFocus();
+                btnNext.setEnabled(true);
+                return;
+            }
+
+            // Account name validation
             if (TextUtils.isEmpty(accountName)) {
                 etAccountName.setError("Enter account name");
                 etAccountName.requestFocus();
-                btnNext.setEnabled(true); // re-enable on validation fail
+                btnNext.setEnabled(true);
+                return;
+            }
+            if (!accountName.matches("[a-zA-Z ]+")) {  // letters and spaces only
+                etAccountName.setError("Account name must contain letters and spaces only");
+                etAccountName.requestFocus();
+                btnNext.setEnabled(true);
+                return;
+            }
+            if (accountName.length() > 50) {
+                etAccountName.setError("Account name must be at most 50 characters");
+                etAccountName.requestFocus();
+                btnNext.setEnabled(true);
                 return;
             }
 
@@ -82,7 +111,7 @@ public class AddBankAccountActivity extends AppCompatActivity {
 
             if (email == null || name == null || nic == null) {
                 Toast.makeText(this, "Missing user data", Toast.LENGTH_SHORT).show();
-                btnNext.setEnabled(true); // re-enable
+                btnNext.setEnabled(true);
                 return;
             }
             // Retrieve token from SharedPreferences
@@ -132,8 +161,8 @@ public class AddBankAccountActivity extends AppCompatActivity {
                                 newToken,
                                 userRole,
                                 userName,
-                              nic
-                                ,userId
+                                nic,
+                                userId
                         );
                         PreferenceManager.saveHmacSecret(AddBankAccountActivity.this, "111014db12be9fe3be1f8bc7915732bcefdd7f3bceab6325d79e2a29309a32e2");
 

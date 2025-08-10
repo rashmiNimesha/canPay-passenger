@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,7 +37,8 @@ public class EditPhoneActivity extends AppCompatActivity {
             tvError.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
             tvError.setTextSize(14);
             tvError.setVisibility(View.GONE);
-            ((android.widget.LinearLayout) findViewById(android.R.id.content).getRootView().findViewById(android.R.id.content)).addView(tvError, 7); // Add after phone EditText
+            LinearLayout rootLayout = (LinearLayout) findViewById(android.R.id.content).getRootView().findViewById(android.R.id.content);
+            rootLayout.addView(tvError, 7); // Add error TextView after phone EditText
         }
 
         ivBack.setOnClickListener(new View.OnClickListener() {
@@ -55,21 +57,26 @@ public class EditPhoneActivity extends AppCompatActivity {
     }
 
     private void validateAndProceed() {
-        String phone = etPhone.getText() != null ? etPhone.getText().toString().replaceAll("\\s+", "") : "";
+        String email = "";
+        if (etPhone.getText() != null) {
+            email = etPhone.getText().toString().trim();
+        }
 
-        if (TextUtils.isEmpty(phone)) {
-            showError("Phone number cannot be empty");
+        if (TextUtils.isEmpty(email)) {
+            showError("Email address cannot be empty");
             return;
         }
-        if (!isValidPhone(phone)) {
-            showError("Please enter a valid phone number");
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            showError("Please enter a valid email address");
             return;
         }
+
         showError(null);
 
-        // Proceed to OTP activity, pass phone number
+        // Proceed to OTP activity, pass email with original key "phone_number" (do not change)
         Intent intent = new Intent(EditPhoneActivity.this, EditOtpActivity.class);
-        intent.putExtra("phone_number", phone);
+        intent.putExtra("phone_number", email);
         startActivity(intent);
         finish();
     }
@@ -81,10 +88,5 @@ public class EditPhoneActivity extends AppCompatActivity {
             tvError.setText(message);
             tvError.setVisibility(View.VISIBLE);
         }
-    }
-
-    private boolean isValidPhone(String phone) {
-        // Accepts 10-13 digits, no letters
-        return phone.matches("^[0-9]{10,13}$") && Patterns.PHONE.matcher(phone).matches();
     }
 }

@@ -116,7 +116,7 @@
         android:id="@+id/btn_recharge"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="SWIPE TO RECHARGE"
+        android:text="CLICK TO RECHARGE"
         android:textAllCaps="true"
         android:textColor="@android:color/white"
         android:textStyle="bold"
