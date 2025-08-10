@@ -3,12 +3,13 @@ package com.example.canpay_passenger;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.example.canpay_passenger.config.HiveMqttManager;
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class NotificationsActivity extends AppCompatActivity {
     private LinearLayout emptyState;
     private NotificationsAdapter adapter;
     private List<NotificationItem> notifications;
+    private HiveMqttManager mqttManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,43 @@ public class NotificationsActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             adapter = new NotificationsAdapter(notifications);
             recyclerView.setAdapter(adapter);
+        }
+
+        // Example: get passengerId from shared preferences or intent
+        String passengerId = getSharedPreferences("user", MODE_PRIVATE).getString("passengerId", null);
+        if (passengerId != null) {
+            mqttManager = new HiveMqttManager(passengerId);
+            mqttManager.connect(() -> {
+                mqttManager.subscribe(this::onPaymentNotificationReceived);
+            }, throwable -> Log.e("MQTT", "Failed to connect for notifications", throwable));
+        }
+    }
+
+    private void onPaymentNotificationReceived(String payload) {
+        try {
+            JSONObject json = new JSONObject(payload);
+            String busNumber = json.optString("busNumber", "Bus");
+            double amount = json.optDouble("amount", 0);
+            String status = json.optString("status", "");
+            String message = json.optString("message", "Payment notification");
+            String date = android.text.format.DateFormat.format("MMM dd, yyyy HH:mm", System.currentTimeMillis()).toString();
+
+            String title = "Payment to " + busNumber + " successful: " + amount + " (" + status + ")";
+            NotificationItem item = new NotificationItem(title, date, true);
+
+            runOnUiThread(() -> {
+                notifications.add(0, item);
+                if (adapter == null) {
+                    adapter = new NotificationsAdapter(notifications);
+                    recyclerView.setAdapter(adapter);
+                } else {
+                    adapter.notifyItemInserted(0);
+                }
+                recyclerView.setVisibility(View.VISIBLE);
+                emptyState.setVisibility(View.GONE);
+            });
+        } catch (Exception e) {
+            Log.e("MQTT", "Failed to parse payment notification", e);
         }
     }
 

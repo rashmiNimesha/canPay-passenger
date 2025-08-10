@@ -12,4 +12,10 @@ public class NotificationItem {
         this.iconResId = iconResId;
         this.isUnread = isUnread;
     }
+
+    public NotificationItem(String title, String date, boolean isUnread) {
+        this.title = title;
+        this.date = date;
+        this.isUnread = isUnread;
+    }
 }
