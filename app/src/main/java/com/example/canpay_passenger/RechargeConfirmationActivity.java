@@ -34,7 +34,7 @@ public class RechargeConfirmationActivity extends AppCompatActivity {
         String dateTime = getIntent().getStringExtra("DATE_TIME");
 
         // Validate incoming intent data
-        if (amount == null || bankAccount == null || dateTime == null) {
+        if (amount == null || bankAccount == null) {
             Toast.makeText(this, "Missing recharge details", Toast.LENGTH_SHORT).show();
             finish();
             return;
