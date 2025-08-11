@@ -18,6 +18,10 @@ import com.example.canpay_passenger.utils.PreferenceManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class RechargeConfirmationActivity extends AppCompatActivity {
     private static final String TAG = "RechargeConfirmationActivity";
 
@@ -31,7 +35,10 @@ public class RechargeConfirmationActivity extends AppCompatActivity {
 
         String amount = getIntent().getStringExtra("AMOUNT");
         String bankAccount = getIntent().getStringExtra("BANK_ACCOUNT");
-        String dateTime = getIntent().getStringExtra("DATE_TIME");
+
+        // Generate current date & time here in format: 02 June 2025 - 10:30 AM
+        String dateTime = new SimpleDateFormat("dd MMMM yyyy - hh:mm a", Locale.getDefault())
+                .format(new Date());
 
         // Validate incoming intent data
         if (amount == null || bankAccount == null) {
@@ -66,11 +73,11 @@ public class RechargeConfirmationActivity extends AppCompatActivity {
         tvTitle.setText("Add " + amount + " LKR to your wallet?");
         ((TextView) findViewById(R.id.tv_from)).setText(bankAccount);
         ((TextView) findViewById(R.id.tv_to)).setText("My CanPay Wallet");
-        ((TextView) findViewById(R.id.tv_date_time)).setText(dateTime);
+        ((TextView) findViewById(R.id.tv_date_time)).setText(dateTime);  // Set current date-time here
 
         final String amountFinal = amount;
         final String bankAccountFinal = bankAccount;
-        final String dateTimeFinal = dateTime;
+        final String dateTimeFinal = dateTime;  // Use generated dateTime for next screen
 
         Button btnRecharge = findViewById(R.id.btn_recharge);
 
@@ -78,7 +85,6 @@ public class RechargeConfirmationActivity extends AppCompatActivity {
             String email = PreferenceManager.getEmail(this);
             String token = PreferenceManager.getToken(this);
 
-            // Validate email & token before API call
             if (email == null || email.trim().isEmpty()) {
                 Toast.makeText(this, "User email not found. Please login again.", Toast.LENGTH_SHORT).show();
                 return;
@@ -118,7 +124,7 @@ public class RechargeConfirmationActivity extends AppCompatActivity {
                             Intent intent = new Intent(RechargeConfirmationActivity.this, RechargeSuccessActivity.class);
                             intent.putExtra("AMOUNT", amountFinal);
                             intent.putExtra("BANK_ACCOUNT", bankAccountFinal);
-                            intent.putExtra("DATE_TIME", dateTimeFinal);
+                            intent.putExtra("DATE_TIME", dateTimeFinal);  // Pass current date-time here
                             intent.putExtra("BALANCE", String.valueOf(balance));
                             intent.putExtra("WALLET_NUMBER", walletNumber);
                             intent.putExtra("ACCOUNT_NAME", accountName);
