@@ -38,16 +38,16 @@
                     android:layout_height="wrap_content"
                     android:text="Your wallet balance is low. Please recharge to avoid service interruptions."
                     android:textStyle="bold"
-                    android:textSize="15sp"
+                    android:textSize="14sp"
                     android:textColor="#23233C" />
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="14dp"
                     android:text="Aug 11, 2025"
-                    android:textSize="12sp"
-                    android:textColor="#888888"
-                    android:layout_marginTop="2dp" />
+                    android:textSize="9sp"
+                    android:textColor="#353434"
+                    android:layout_marginTop="1dp" />
             </LinearLayout>
 
             <ImageView
@@ -92,11 +92,11 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="14dp"
                     android:text="Aug 10, 2025"
-                    android:textSize="13sp"
-                    android:textColor="#888888"
-                    android:layout_marginTop="2dp" />
+                    android:textSize="9sp"
+                    android:textColor="#353434"
+                    android:layout_marginTop="1dp" />
             </LinearLayout>
 
             <ImageView
@@ -136,16 +136,16 @@
                     android:layout_height="wrap_content"
                     android:text="New promotional offer: Get 10% bonus on wallet recharges above LKR 500."
                     android:textStyle="bold"
-                    android:textSize="15sp"
+                    android:textSize="14sp"
                     android:textColor="#23233C" />
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Aug 10, 2025"
-                    android:textSize="13sp"
-                    android:textColor="#888888"
-                    android:layout_marginTop="2dp" />
+                    android:layout_height="14dp"
+                    android:text="Aug 11, 2025"
+                    android:textSize="9sp"
+                    android:textColor="#353434"
+                    android:layout_marginTop="1dp" />
             </LinearLayout>
 
             <ImageView
@@ -185,16 +185,16 @@
                     android:layout_height="wrap_content"
                     android:text="Account security was updated."
                     android:textStyle="bold"
-                    android:textSize="15sp"
+                    android:textSize="14sp"
                     android:textColor="#23233C" />
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Nov 05, 2024"
-                    android:textColor="#888888"
-                    android:textSize="13sp" />
+                    android:layout_height="14dp"
+                    android:text="Aug 11, 2025"
+                    android:textSize="9sp"
+                    android:textColor="#353434"
+                    android:layout_marginTop="1dp" />
             </LinearLayout>
 
             <ImageView
@@ -234,16 +234,16 @@
                     android:layout_height="wrap_content"
                     android:text="Subscription Renewed"
                     android:textStyle="bold"
-                    android:textSize="15sp"
+                    android:textSize="14sp"
                     android:textColor="#23233C" />
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Aug 09, 2025"
-                    android:textSize="13sp"
-                    android:textColor="#888888"
-                    android:layout_marginTop="2dp" />
+                    android:layout_height="14dp"
+                    android:text="Aug 11, 2025"
+                    android:textSize="9sp"
+                    android:textColor="#353434"
+                    android:layout_marginTop="1dp" />
             </LinearLayout>
 
             <ImageView
