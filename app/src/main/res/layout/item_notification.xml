@@ -22,7 +22,7 @@
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_arrow_blue"
+                android:src="@drawable/ic_notification"
                 android:background="@drawable/circle_white_background"
                 android:layout_marginEnd="12dp"
                 android:contentDescription="@null" />
@@ -71,7 +71,7 @@
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_arrow_blue"
+                android:src="@drawable/ic_notification"
                 android:background="@drawable/circle_white_background"
                 android:layout_marginEnd="12dp"
                 android:contentDescription="@null" />
@@ -120,7 +120,7 @@
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_arrow_blue"
+                android:src="@drawable/ic_notification"
                 android:background="@drawable/circle_white_background"
                 android:layout_marginEnd="12dp"
                 android:contentDescription="@null" />
@@ -169,7 +169,7 @@
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_arrow_blue"
+                android:src="@drawable/ic_notification"
                 android:background="@drawable/circle_white_background"
                 android:layout_marginEnd="12dp"
                 android:contentDescription="@null" />
@@ -218,7 +218,7 @@
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_arrow_blue"
+                android:src="@drawable/ic_notification"
                 android:background="@drawable/circle_white_background"
                 android:layout_marginEnd="12dp"
                 android:contentDescription="@null" />
