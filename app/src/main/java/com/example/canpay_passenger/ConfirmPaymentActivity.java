@@ -40,7 +40,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
 
         // Retrieve intent data
         busId = getIntent().getStringExtra("busId");
-        operatorId = getIntent().getStringExtra("operatorId");
+        // operatorId = getIntent().getStringExtra("operatorId");
         amount = getIntent().getStringExtra("amount");
 
         // Initialize UI
@@ -64,7 +64,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
         swipeToPay = findViewById(R.id.btn_swipe_to_pay);
         swipeToPay.setOnClickListener(v -> processPayment());
 
-        Log.d(TAG, "Received: busId=" + busId + ", operatorId=" + operatorId + ", amount=" + amount);
+        Log.d(TAG, "Received: busId=" + busId + ", amount=" + amount);
 
         fetchBusAndOperatorDetails();
     }
@@ -79,7 +79,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             return;
         }
 
-        String endpoint = String.format(Endpoints.BUS_OPERATOR_DETAILS, busId, operatorId);
+        String endpoint = String.format(Endpoints.BUS_OPERATOR_DETAILS, busId);
         Log.d(TAG, "Fetching details from: " + endpoint);
 
         ApiHelper.getJson(this, endpoint, token, new ApiHelper.Callback() {
@@ -127,7 +127,7 @@ public class ConfirmPaymentActivity extends AppCompatActivity {
             return;
         }
 
-        PaymentRequest request = new PaymentRequest(busId, operatorId, amount);
+        PaymentRequest request = new PaymentRequest(busId, amount);
         Gson gson = new Gson();
         String jsonBody = gson.toJson(request);
         JSONObject requestBody;

@@ -5,9 +5,8 @@ public class PaymentRequest {
     private String operatorId;
     private String amount;
 
-    public PaymentRequest(String busId, String operatorId, String amount) {
+    public PaymentRequest(String busId, String amount) {
         this.busId = busId;
-        this.operatorId = operatorId;
         this.amount = amount;
     }
 

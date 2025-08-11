@@ -76,26 +76,20 @@ public class QrScanActivity extends AppCompatActivity {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                try {
-                    JSONObject qrData = new JSONObject(result.getText());
-                    String busId = qrData.getString("busId");
-                    String operatorId = qrData.getString("operatorId");
+                String scannedText = result.getText().trim();
+                Log.d("QrScanActivity", "Scanned QR: " + scannedText);
 
-                    Log.d("QrScanActivity", "Scanned QR: busId=" + busId + ", operatorId=" + operatorId);
+                // Here, scannedText is directly the bus ID
+                String busId = scannedText;
 
-                    Intent intent = new Intent(QrScanActivity.this, EnterAmountActivity.class);
-                    intent.putExtra("busId", busId);
-                    intent.putExtra("operatorId", operatorId);
-                    startActivity(intent);
-                    finish();
-                } catch (JSONException e) {
-                    Log.e("QrScanActivity", "Invalid QR code format: " + e.getMessage());
-                    Toast.makeText(QrScanActivity.this, "Invalid QR code format", Toast.LENGTH_SHORT).show();
-                }
+                // Pass it to the next activity
+                Intent intent = new Intent(QrScanActivity.this, EnterAmountActivity.class);
+                intent.putExtra("busId", busId);
+                startActivity(intent);
+                finish();
             }
         }
-
-        @Override
+    @Override
         public void possibleResultPoints(List<com.google.zxing.ResultPoint> resultPoints) {
             // Handle possible result points if needed
         }

@@ -1,159 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/screen_bg">
+    android:background="@drawable/screen_bg"
+    android:orientation="vertical"
+    android:padding="24dp">
 
-    <LinearLayout
+    <!-- Balance Card with CanPay Logo -->
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@color/button_blue">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="24dp">
+
+            <!-- CanPay Logo at top right -->
+            <ImageView
+                android:id="@+id/iv_canpay_logo"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:src="@drawable/canpay_logo"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:contentDescription="@string/canpay_logo" />
+
+            <!-- Cardholder Name -->
+            <TextView
+                android:id="@+id/tv_card_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sehan"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="4dp" />
+
+            <!-- Card Number -->
+            <TextView
+                android:id="@+id/tv_card_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="**** 2174"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:layout_below="@id/tv_card_name"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="8dp" />
+
+            <!-- Balance Label -->
+            <TextView
+                android:id="@+id/tv_balance_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Current Balance"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:layout_below="@id/tv_card_number"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="24dp" />
+
+            <!-- Balance Amount -->
+            <TextView
+                android:id="@+id/tv_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LKR 0000.00"
+                android:textColor="@color/white"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_below="@id/tv_balance_label"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="4dp" />
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Recharge Wallet Button -->
+    <Button
+        android:id="@+id/btn_recharge"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text=" + RECHARGE WALLET"
+        android:background="@drawable/outlined_button"
+        android:textColor="@color/button_blue"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Recent Transactions Header -->
+    <TextView
+        android:id="@+id/tv_recent_transactions"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Recent Transactions"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Recent Transactions List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_recent_transactions"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
+
+    <!-- Empty State View (Hidden by default) -->
+    <LinearLayout
+        android:id="@+id/empty_state_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:gravity="center"
+        android:paddingTop="48dp"
+        android:paddingBottom="48dp"
+        android:visibility="gone">
 
-        <!-- Balance Card with CanPay Logo -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="8dp"
-            app:cardBackgroundColor="@color/button_blue">
+        <ImageView
+            android:id="@+id/iv_empty_state"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_no_transactions"
+            android:contentDescription="@null" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="24dp">
-
-                <!-- CanPay Logo at top right -->
-                <ImageView
-                    android:id="@+id/iv_canpay_logo"
-                    android:layout_width="80dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/canpay_logo"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
-                    android:contentDescription="@string/canpay_logo" />
-
-                <!-- Cardholder Name -->
-                <TextView
-                    android:id="@+id/tv_card_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sehan"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginTop="4dp" />
-
-                <!-- Card Number -->
-                <TextView
-                    android:id="@+id/tv_card_number"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="**** 2174"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:layout_below="@id/tv_card_name"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginTop="8dp" />
-
-                <!-- Balance Label -->
-                <TextView
-                    android:id="@+id/tv_balance_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Current Balance"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:layout_below="@id/tv_card_number"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginTop="24dp" />
-
-                <!-- Balance Amount -->
-                <TextView
-                    android:id="@+id/tv_balance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="LKR 0000.00"
-                    android:textColor="@color/white"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    android:layout_below="@id/tv_balance_label"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginTop="4dp" />
-
-            </RelativeLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Recharge Wallet Button -->
-        <Button
-            android:id="@+id/btn_recharge"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text=" + RECHARGE WALLET"
-            android:background="@drawable/outlined_button"
-            android:textColor="@color/button_blue"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            android:layout_marginBottom="24dp"/>
-
-        <!-- Recent Transactions Header -->
         <TextView
-            android:id="@+id/tv_recent_transactions"
+            android:id="@+id/tv_no_transactions_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Recent Transactions"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
+            android:text="No transactions found!"
             android:textStyle="bold"
-            android:layout_marginBottom="12dp"/>
+            android:textSize="18sp"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="24dp" />
 
-        <!-- Recent Transactions List -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_recent_transactions"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_no_transactions_subtitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"/>
-
-        <!-- Empty State View (Hidden by default) -->
-        <LinearLayout
-            android:id="@+id/empty_state_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="48dp"
-            android:paddingBottom="48dp"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/iv_empty_state"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@drawable/ic_no_transactions"
-                android:contentDescription="@null" />
-
-            <TextView
-                android:id="@+id/tv_no_transactions_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="No transactions found!"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:textColor="@color/text_primary"
-                android:layout_marginTop="24dp"/>
-
-            <TextView
-                android:id="@+id/tv_no_transactions_subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="You haven't made any payments yet."
-                android:textSize="15sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginTop="8dp"/>
-        </LinearLayout>
-
+            android:text="You haven't made any payments yet."
+            android:textSize="15sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="8dp" />
     </LinearLayout>
-</ScrollView>
+
+</LinearLayout>
